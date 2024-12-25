@@ -45,9 +45,9 @@ const Home = () => {
       <div className="min-h-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80 mb-28">
         {/* Header */}
         <header className="flex justify-between items-center py-8">
-          <h1 className="text-2xl font-bold">LockNotes</h1>
+          <h1 className="text-2xl font-bold">NotesLocker</h1>
           <a
-            href="https://github.com"
+            href="https://github.com/senapati484/NotesLocker"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-800 hover:text-black flex gap-2 font-semibold"
@@ -58,7 +58,15 @@ const Home = () => {
 
         {/* Hero Section */}
         <main className="flex flex-col items-center justify-center text-center py-24">
-          <button className="py-1 px-4 rounded-full hover:bg-slate-100 border my-10">
+          <button
+            className="py-1 px-4 rounded-full hover:bg-slate-100 border my-10"
+            onClick={() =>
+              window.open(
+                "https://github.com/senapati484/NotesLocker",
+                "_blank"
+              )
+            }
+          >
             Star us on Github⭐️
           </button>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -70,18 +78,18 @@ const Home = () => {
           </p>
 
           {/* Input Section */}
-          <div className="flex items-center space-x-2">
-            <span className="text-gray-500">locknotes.com/</span>
+          <div className="w-full mt-10 flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <span className="text-gray-500">noteslocker.vercel.app/</span>
             <input
               type="text"
               placeholder="mynotes"
-              className="border rounded px-3 py-2 focus:outline-none"
+              className="border rounded px-3 py-2 focus:outline-none w-full sm:flex-1"
               value={user}
               onChange={(e) => setUser(e.target.value)}
             />
             <button
               onClick={() => fetchUser(user, navigate)}
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 w-full sm:w-auto"
             >
               Get Started
             </button>
@@ -108,10 +116,10 @@ const Home = () => {
         </section>
 
         {/* secure Notes */}
-        <section className="py-6 px-6 w-full my-8 shadow-md rounded-lg border">
+        <section className="py-4 px-4 w-full my-8 shadow-md rounded-lg border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             {/* Text Section */}
-            <div className="md:w-6/12 space-y-4 flex flex-col  justify-start pl-4">
+            <div className="md:w-6/12 space-y-4 flex flex-col  justify-start pl-4 pt-4">
               <h4 className=" text-slate-400 font-bold">Encrypted Notepad</h4>
               <h2 className="text-3xl font-bold font-mono leading-snug text-gray-800">
                 Protect your notes with a secure password.
@@ -172,7 +180,7 @@ const Home = () => {
         </section>
 
         {/* FAQs */}
-        <section className="py-6 px-6 h-full border rounded-lg shadow-md">
+        <section className="py-4 px-4 h-full border rounded-lg shadow-md">
           <h2 className="text-3xl font-bold">FAQs</h2>
           <div className="bg-white rounded-lg">
             {faqData.map((faq, index) => (
@@ -188,10 +196,39 @@ const Home = () => {
       {/* Footer */}
       <footer className="py-10 text-center text-gray-500 border-t">
         Built by{" "}
-        {<span className="text-gray-800 font-semibold"> @senapati484 </span>}
+        {
+          <span
+            className="text-gray-800 font-semibold cursor-pointer"
+            onClick={() =>
+              window.open("https://github.com/senapati484", "_blank")
+            }
+          >
+            {" "}
+            @senapati484{" "}
+          </span>
+        }
         {<br />} LockNotes is open-source on{" "}
-        {<span className="text-gray-800 font-semibold"> Github </span>} and uses{" "}
-        {<span className="text-gray-800 font-semibold"> firebase </span>}
+        {
+          <span
+            className="text-gray-800 font-semibold cursor-pointer"
+            onClick={() => window.open("https://github.com/", "_blank")}
+          >
+            {" "}
+            Github{" "}
+          </span>
+        }{" "}
+        and uses{" "}
+        {
+          <span
+            className="text-gray-800 font-semibold cursor-pointer"
+            onClick={() =>
+              window.open("https://firebase.google.com/", "_blank")
+            }
+          >
+            {" "}
+            firebase{" "}
+          </span>
+        }
         for storing notes and users.
       </footer>
     </>

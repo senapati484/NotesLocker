@@ -23,29 +23,35 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {user}</h1>
-      <p className="mb-2">Please enter your password to continue:</p>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter your password"
-        className="border rounded px-3 py-2 mb-4 w-64"
-      />
-      <input
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Re-enter your password"
-        className="border rounded px-3 py-2 mb-4 w-64"
-      />
-      <button
-        onClick={handleRegister}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Create
-      </button>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="bg-white shadow-lg rounded-lg p-4 max-w-sm w-full border border-gray-300">
+        <p className="text-2xl font-bold mb-4 text-start text-gray-500">
+          {user}: This note is available 🎉 you can create
+        </p>
+        <p className="text-2xl font-bold mb-4 text-start text-gray-800">
+          Enter password to continue:
+        </p>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter your password"
+          className="border rounded px-4 py-2 mb-4 w-full focus:ring-2 focus:ring-gray-500 focus:outline-none"
+        />
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Re-enter your password"
+          className="border rounded px-4 py-2 mb-4 w-full focus:ring-2 focus:ring-gray-500 focus:outline-none"
+        />
+        <button
+          onClick={handleRegister}
+          className="bg-black text-white px-4 py-2 rounded w-full hover:bg-gray-800 transition duration-300"
+        >
+          Create
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -44,22 +45,28 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {username}</h1>
-      <p className="mb-2">Please enter your password to continue:</p>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter your password"
-        className="border rounded px-3 py-2 mb-4 w-64"
-      />
-      <button
-        onClick={handleLogin}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Login
-      </button>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="bg-white shadow-lg rounded-lg p-4 max-w-sm w-full border border-gray-300">
+        <p className="text-2xl font-bold mb-4 text-start text-gray-500">
+          {username}: This note is already taken 🚀. If it's yours
+        </p>
+        <p className="text-2xl font-bold mb-4 text-start text-gray-800">
+          Enter your password to continue:
+        </p>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter your password"
+          className="border rounded px-4 py-2 mb-4 w-full focus:ring-2 focus:ring-gray-500 focus:outline-none"
+        />
+        <button
+          onClick={handleLogin}
+          className="bg-black text-white px-4 py-2 rounded w-full hover:bg-gray-800 transition duration-300"
+        >
+          Login
+        </button>
+      </div>
     </div>
   );
 };
