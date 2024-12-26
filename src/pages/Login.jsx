@@ -35,7 +35,9 @@ const Login = ({ onLogin }) => {
       if (password === realPassword) {
         ToastNotification.success("Login successful!");
         onLogin(username);
-        navigate(`/${username || userData[0].username}/notes`);
+        navigate(`/${username || userData[0].username}/notes`, {
+          state: { userData: userData },
+        });
       } else {
         ToastNotification.warning("Please enter the correct password!");
       }
