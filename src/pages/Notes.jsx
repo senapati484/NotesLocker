@@ -61,7 +61,7 @@ const Notes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
+    <div className="max-h-screen max-w-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
       {/* Header */}
       <header className="flex justify-between items-center py-4">
         <h1 className="text-xl font-bold sm:appearance-none">NotesLocker</h1>
