@@ -13,6 +13,7 @@ import {
   LuRefreshCw,
   LuX,
 } from "react-icons/lu";
+// import { createNote } from "../utils/createNote";
 
 const Notes = () => {
   const { username } = useParams();
@@ -107,8 +108,8 @@ const Notes = () => {
           <button className="px-3 py-3 rounded-md">
             <LuArrowLeft />
           </button>
-          <div className="w-full">
-            <button className="flex flex-row gap-2 items-center justify-center overflow-x-auto">
+          <div className="w-full overflow-x-auto overflow-hidden">
+            <button className="flex flex-row gap-2 items-center justify-center">
               {notes.map((note, index) => (
                 <div
                   key={index}
@@ -126,10 +127,13 @@ const Notes = () => {
           <button className="px-3 py-3 rounded-md ">
             <LuArrowRight />
           </button>
-          <button className="px-3 py-3 rounded-md">
+          <button
+            className="px-3 py-3 rounded-md"
+            // onClick={createNote(username, "New Note")}
+          >
             <LuCirclePlus />
           </button>
-          <button className="px-3 py-3 rounded-md border" onClick={handleClick}>
+          <button className="px-3 py-3 rounded-md border">
             <LuEllipsis />
           </button>
         </div>
