@@ -12,6 +12,7 @@ export const setUser = async (user, password) => {
       password: password, // Hash this password in next step using
       notes: [
         {
+          id: new Date().toISOString(),
           name: "notes 1",
           text: "",
           createdAt: new Date().toISOString(),
@@ -23,6 +24,7 @@ export const setUser = async (user, password) => {
 
     ToastNotification.success("Registration successful!");
   } catch (error) {
+    console.log(error);
     ToastNotification.warning("Failed to register user! Please try again.");
   }
 };
