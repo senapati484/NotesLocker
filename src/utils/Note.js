@@ -95,6 +95,63 @@ export const deleteNote = async (user, noteId) => {
   }
 };
 
+// Update user password
+export const updatePassword = async (user, newPassword) => {
+  try {
+    if (!user) throw new Error("User name is required.");
+    if (!newPassword) throw new Error("Password is required.");
+
+    const userRef = doc(db, "users", user);
+
+    await updateDoc(userRef, { password: newPassword });
+
+    ToastNotification.success("Password updated successfully!");
+  } catch (error) {
+    console.log(error);
+    ToastNotification.warning("Failed to update password! Please try again.");
+  }
+};
+
+// Update the name of a note
+export const updateNoteName = async (userName, noteName, newName) => {
+  try {
+    if (!userName) throw new Error("User name is required.");
+    if (!noteName) throw new Error("Note name is required.");
+    if (!newName) throw new Error("New name is required.");
+
+    const userRef = doc(db, "users", userName); // Reference the user document
+
+    await runTransaction(db, async (transaction) => {
+      const userSnapshot = await transaction.get(userRef);
+
+      if (!userSnapshot.exists()) {
+        throw new Error("User not found.");
+      }
+
+      const userDoc = userSnapshot.data();
+
+      // Ensure that notes exist before attempting to map through them
+      if (!userDoc.notes || userDoc.notes.length === 0) {
+        throw new Error("No notes found for the user.");
+      }
+
+      const updatedNotes = userDoc.notes.map((note) =>
+        note.id === noteName
+          ? { ...note, name: newName, updatedAt: new Date().toISOString() }
+          : note
+      );
+
+      // Update the user document with the updated notes
+      transaction.update(userRef, { notes: updatedNotes });
+    });
+
+    ToastNotification.success("Note name updated successfully!");
+  } catch (error) {
+    ToastNotification.warning(`Failed to update note name: ${error.message}`);
+    // console.error("Error in updateNoteName:", error);
+  }
+};
+
 // Update the name of a note
 export const updateName = async (user, noteId, newName) => {
   try {
@@ -117,21 +174,4 @@ export const updateName = async (user, noteId, newName) => {
     console.log(error);
     ToastNotification.warning("Failed to update note name! Please try again.");
   }
-};
-
-// Update user password
-export const updatePassword = async (user, newPassword) => {
-  try {
-    if (!user) throw new Error("User name is required.");
-    if (!newPassword) throw new Error("Password is required.");
-
-    const userRef = doc(db, "users", user);
-
-    await updateDoc(userRef, { password: newPassword });
-
-    ToastNotification.success("Password updated successfully!");
-  } catch (error) {
-    console.log(error);
-    ToastNotification.warning("Failed to update password! Please try again.");
-  }
-};
+}; //not implemented

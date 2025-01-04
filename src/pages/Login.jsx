@@ -19,13 +19,29 @@ const Login = ({ onLogin }) => {
   const { userData: userFromLocation } = location.state || {};
 
   useEffect(() => {
-    if (userFromLocation) {
-      // If user data is available from the location state, set it
-      setUserData(userFromLocation);
-    } else {
-      // If not, fetch user data from Firebase
-      fetchUser(username, navigate, setUserData);
-    }
+    const fetchData = async () => {
+      try {
+        if (userFromLocation) {
+          // If user data is available from the location state, set it
+          setUserData(userFromLocation);
+        } else {
+          // Fetch user data from Firebase
+          const result = await fetchUser(username);
+          if (result.exists) {
+            setUserData(result.userData);
+          } else {
+            ToastNotification.error(`No user named ${username} found.`);
+            navigate("/register", { state: { user: username } });
+          }
+        }
+      } catch (error) {
+        ToastNotification.error("Error fetching user data.");
+        console.log(error);
+        navigate("/");
+      }
+    };
+
+    if (username) fetchData();
   }, [username, userFromLocation, navigate]);
 
   const handleLogin = () => {

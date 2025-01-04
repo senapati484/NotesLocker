@@ -10,7 +10,13 @@ import {
   LuSave,
   LuUserPen,
 } from "react-icons/lu";
-import { updateText, deleteNote, createNote } from "../utils/Note";
+import {
+  updateText,
+  deleteNote,
+  createNote,
+  updateNoteName,
+} from "../utils/Note";
+import ConfirmPassword from "../components/ConfirmPassword";
 
 const Notes = () => {
   const location = useLocation();
@@ -18,12 +24,20 @@ const Notes = () => {
 
   const [notes, setNotes] = useState(userData?.[0]?.notes || []);
   const [selectedNote, setSelectedNote] = useState(userData?.[0]?.notes?.[0]);
-
   const [width, setWidth] = useState(window.innerWidth);
+
+  // Change password handlers
+  const [isConfirmVisible, setConfirmVisible] = useState(false);
+  const handleOpen = () => setConfirmVisible(true);
+  const handleClose = () => setConfirmVisible(false);
+  const handleConfirm = () => {
+    setConfirmVisible(false);
+  };
+
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    // console.log(userData[0]);
+    // console.log(userData[0].notes.length);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -46,19 +60,31 @@ const Notes = () => {
     setNotes(updatedNotes);
   }; // solved // Frontend
 
-  const handleNoteNameChange = (event) => {
+  const handleNoteNameChange = async (event) => {
     const updatedName = event.target.value;
     const updatedNote = {
       ...selectedNote,
       name: updatedName,
       updatedAt: new Date().toISOString(),
     };
+
     setSelectedNote(updatedNote);
 
     const updatedNotes = notes.map((note) =>
       note.id === selectedNote.id ? updatedNote : note
     );
     setNotes(updatedNotes);
+
+    try {
+      if (userData?.[0]?.name) {
+        await updateNoteName(userData[0].name, selectedNote.id, updatedName);
+        console.log("Note name updated successfully:", updatedName);
+      } else {
+        console.error("User data is missing. Cannot update the note name.");
+      }
+    } catch (error) {
+      console.error("Failed to update note name:", error.message);
+    }
   }; // solved // Frontend
 
   const createNoteHandler = async () => {
@@ -128,13 +154,32 @@ const Notes = () => {
     }
   }; // solced // Backend
 
+  const handleRightArrow = () => {
+    const index = notes.indexOf(selectedNote);
+    if (index < notes.length - 1) {
+      setSelectedNote(notes[index + 1]);
+    }
+  }; // solved // Frontend
+
+  const handleLeftArrow = () => {
+    const index = notes.indexOf(selectedNote);
+    if (index > 0) {
+      setSelectedNote(notes[index - 1]);
+    }
+  }; // solved // Frontend
+
+  // useEffect(() => {
+  //   console.log(userData[0]);
+  // });
+
   return (
-    <div className="max-h-screen max-w-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
+    <div className="flex flex-col h-screen max-w-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
+      {/* Header */}
       <header className="flex justify-between items-center py-4">
         <h1 className="text-xl font-bold sm:appearance-none">NotesLocker</h1>
         <div className="flex flex-row gap-2">
           {/* Change Password */}
-          <button className="rounded-md border">
+          <button className="rounded-md border" onClick={handleOpen}>
             {width < 768 ? (
               <p className="p-3">
                 <LuUserPen />
@@ -142,7 +187,7 @@ const Notes = () => {
             ) : (
               <p className="py-2 px-3">Change Password</p>
             )}
-          </button>{" "}
+          </button>
           {/* Save Button */}
           <button
             className="rounded-md border bg-black text-white"
@@ -169,19 +214,22 @@ const Notes = () => {
               <p className="py-2 px-3">Delete</p>
             )}
           </button>
-          {/* night mode button */}
+          {/* Night mode button */}
           <button className="p-3 rounded-md border">
             <MdOutlineWbSunny />
-          </button>{" "}
+          </button>
         </div>
       </header>
+
+      {/* Next Section */}
       <section className="flex flex-col py-4 gap-2">
         <div className="flex flex-row gap-2 items-center justify-between">
           {/* Left arrow */}
-          <button className="px-3 py-3 rounded-md">
+          <button className="px-3 py-3 rounded-md" onClick={handleLeftArrow}>
             <LuArrowLeft />
           </button>
-          <div className="w-full overflow-x-auto overflow-hidden">
+          {/* Scrollable container */}
+          <div className="w-full overflow-x-scroll whitespace-nowrap max-w-full">
             <div className="flex flex-row gap-2 items-center">
               {notes.map((note, index) => (
                 <div
@@ -191,14 +239,14 @@ const Notes = () => {
                   }`}
                   onClick={() => handleNoteClick(note)}
                 >
-                  <p className="py-2 whitespace-nowrap">{note.name}</p>
-                  {/* <LuX /> */}
+                  <p className="py-2">{note.name}</p>
                 </div>
               ))}
             </div>
           </div>
+
           {/* Right arrow */}
-          <button className="px-3 py-3 rounded-md">
+          <button className="px-3 py-3 rounded-md" onClick={handleRightArrow}>
             <LuArrowRight />
           </button>
           {/* Create note */}
@@ -219,11 +267,18 @@ const Notes = () => {
           />
         </div>
       </section>
+
+      {/* Textarea */}
       <textarea
         name="body"
         value={selectedNote ? selectedNote.text : ""}
         onChange={handleNoteTextChange}
-        className="w-full h-96 border p-2 rounded-md"
+        className="flex-grow w-full border p-4 mb-4 rounded-md"
+      />
+      <ConfirmPassword
+        isVisible={isConfirmVisible}
+        onClose={handleClose}
+        onConfirm={handleConfirm}
       />
     </div>
   );

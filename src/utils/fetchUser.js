@@ -2,7 +2,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "../components/ToastNotification";
 
-export const fetchUser = async (user, navigate) => {
+export const fetchUser = async (user) => {
   try {
     const usersRef = collection(db, "users");
     const q = query(usersRef, where("name", "==", user));
@@ -13,14 +13,13 @@ export const fetchUser = async (user, navigate) => {
         id: doc.id,
         ...doc.data(),
       }));
-      //   console.log(`${user}'s data:`, userData);
-      navigate(`/${user}`, { state: { userData: userData } });
+      return { exists: true, userData };
     } else {
-      //   console.log(`No user named ${user} found.`);
-      navigate("/register", { state: { user: user } });
+      return { exists: false };
     }
   } catch (error) {
     console.error("Error fetching user: ", error);
-    ToastNotification.warning(`Errot fetching ${user}'s Data`);
+    ToastNotification.warning(`Error fetching ${user}'s Data`);
+    throw error;
   }
 };

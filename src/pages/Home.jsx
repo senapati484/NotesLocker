@@ -6,6 +6,7 @@ import { LuGlobeLock, LuIdCard, LuGithub } from "react-icons/lu";
 
 import Collapsible from "../components/Collapsable";
 import { fetchUser } from "../utils/fetchUser"; // Import the fetchUser function
+import ToastNotification from "../components/ToastNotification";
 
 const faqData = [
   {
@@ -39,6 +40,19 @@ const faqData = [
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
+
+  const handleGetStarted = async () => {
+    try {
+      const result = await fetchUser(user);
+      if (result.exists) {
+        navigate(`/${user}`, { state: { userData: result.userData } });
+      } else {
+        navigate("/register", { state: { user } });
+      }
+    } catch (error) {
+      ToastNotification.warning(error.message);
+    }
+  };
 
   return (
     <>
@@ -88,7 +102,7 @@ const Home = () => {
               onChange={(e) => setUser(e.target.value)}
             />
             <button
-              onClick={() => fetchUser(user, navigate)}
+              onClick={handleGetStarted}
               className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 w-full sm:w-auto"
             >
               Get Started

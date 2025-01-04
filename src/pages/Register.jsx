@@ -14,11 +14,15 @@ const Register = () => {
   const { user } = location.state || {};
 
   const handleRegister = async () => {
-    if (password === confirmPassword) {
-      await setUser(user, password);
-      navigate(`/${user}/notes`);
+    if (password.length < 3) {
+      ToastNotification.error("Password must be at least 3 characters long");
     } else {
-      ToastNotification.error("Passwords do not match. Please try again.");
+      if (password === confirmPassword) {
+        await setUser(user, password);
+        navigate(`/${user}/notes`);
+      } else {
+        ToastNotification.error("Passwords do not match. Please try again.");
+      }
     }
   };
 
