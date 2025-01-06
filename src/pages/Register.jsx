@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { setUser } from "../utils/setUser";
 import ToastNotification from "../components/ToastNotification";
@@ -13,16 +12,37 @@ const Register = () => {
 
   const { user } = location.state || {};
 
+  // Function to validate password
+  const validatePassword = (password) => {
+    const errors = [];
+    if (!/[A-Z]/.test(password)) errors.push("uppercase");
+    if (!/[a-z]/.test(password)) errors.push("lowercase");
+    if (!/[0-9]/.test(password)) errors.push("number");
+    if (!/[^A-Za-z0-9]/.test(password)) errors.push("symbol");
+    if (password.length <= 5) errors.push("at least 6 characters");
+
+    if (errors.length > 0) {
+      ToastNotification.error(`Password must contain ${errors.join(", ")}.`);
+      return false;
+    }
+    return true;
+  };
+
   const handleRegister = async () => {
-    if (password.length < 3) {
-      ToastNotification.error("Password must be at least 3 characters long");
-    } else {
-      if (password === confirmPassword) {
+    if (!validatePassword(password)) {
+      return;
+    }
+
+    if (password === confirmPassword) {
+      try {
         await setUser(user, password);
         navigate(`/${user}/notes`);
-      } else {
-        ToastNotification.error("Passwords do not match. Please try again.");
+      } catch (error) {
+        console.log(error);
+        ToastNotification.error("Failed to register. Please try again.");
       }
+    } else {
+      ToastNotification.error("Passwords do not match. Please try again.");
     }
   };
 

@@ -30,10 +30,6 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(userData[0].name);
-  // });
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"

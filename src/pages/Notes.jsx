@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { MdOutlineWbSunny } from "react-icons/md";
@@ -9,6 +10,8 @@ import {
   LuTrash2,
   LuSave,
   LuUserPen,
+  LuRefreshCw,
+  LuBookmark,
 } from "react-icons/lu";
 import {
   updateText,
@@ -17,14 +20,18 @@ import {
   updateNoteName,
 } from "../utils/Note";
 import ConfirmPassword from "../components/ConfirmPassword";
+import ToastNotification from "../components/ToastNotification";
 
 const Notes = () => {
+  // Get user data from the location state
   const location = useLocation();
   const { userData } = location.state || {};
 
+  // State variables
   const [notes, setNotes] = useState(userData?.[0]?.notes || []);
   const [selectedNote, setSelectedNote] = useState(userData?.[0]?.notes?.[0]);
   const [width, setWidth] = useState(window.innerWidth);
+  const [autoSave, setAutoSave] = useState(false);
 
   // Change password handlers
   const [isConfirmVisible, setConfirmVisible] = useState(false);
@@ -37,13 +44,26 @@ const Notes = () => {
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
-    // console.log(userData[0].notes.length);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, []); // used for getting the screen width
+
+  useEffect(() => {
+    if (autoSave) {
+      const timer = setTimeout(() => {
+        handleNoteSaveClick();
+        console.log("Auto Save enabled");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [autoSave, selectedNote, notes]); // used for setting the auto save
+
+  const handleAutoSave = () => {
+    setAutoSave(!autoSave);
+  }; // auto save enabled // solved
 
   const handleNoteClick = (note) => {
     setSelectedNote(note);
-  }; // solved // Frontend
+  }; // click to the note to select the note as current note // solved // Frontend
 
   const handleNoteTextChange = (event) => {
     const updatedText = event.target.value;
@@ -58,34 +78,57 @@ const Notes = () => {
       note.id === selectedNote.id ? updatedNote : note
     );
     setNotes(updatedNotes);
-  }; // solved // Frontend
+  }; // setting the notename in the usestate // solved // Frontend
 
-  const handleNoteNameChange = async (event) => {
+  const handleRightArrow = () => {
+    const index = notes.indexOf(selectedNote);
+    if (index < notes.length - 1) {
+      setSelectedNote(notes[index + 1]);
+    }
+  }; // select right note from the list // solved // Frontend
+
+  const handleLeftArrow = () => {
+    const index = notes.indexOf(selectedNote);
+    if (index > 0) {
+      setSelectedNote(notes[index - 1]);
+    }
+  }; // select left note from the list // solved // Frontend
+
+  const handleNoteNameChange = (event) => {
     const updatedName = event.target.value;
     const updatedNote = {
       ...selectedNote,
       name: updatedName,
       updatedAt: new Date().toISOString(),
     };
-
     setSelectedNote(updatedNote);
 
     const updatedNotes = notes.map((note) =>
       note.id === selectedNote.id ? updatedNote : note
     );
     setNotes(updatedNotes);
+  }; // Only updates the local state // solved // frontend
 
+  const handleSaveNoteNameClick = async () => {
     try {
-      if (userData?.[0]?.name) {
-        await updateNoteName(userData[0].name, selectedNote.id, updatedName);
-        console.log("Note name updated successfully:", updatedName);
+      if (userData?.[0]?.name && selectedNote?.id) {
+        await updateNoteName(
+          userData[0].name,
+          selectedNote.id,
+          selectedNote.name
+        );
+        ToastNotification.success(
+          "Note name saved successfully",
+          selectedNote.name
+        );
       } else {
-        console.error("User data is missing. Cannot update the note name.");
+        console.error("User data or selected note is missing. Cannot save.");
+        ToastNotification.warning("Cannot save note name", "User data missing");
       }
     } catch (error) {
-      console.error("Failed to update note name:", error.message);
+      ToastNotification.error("Failed to save note name", error.message);
     }
-  }; // solved // Frontend
+  }; // Explicitly saves the note name to the backend // solved // backend
 
   const createNoteHandler = async () => {
     try {
@@ -115,7 +158,7 @@ const Notes = () => {
       console.error("Failed to create a note:", error.message);
       console.log("failed to create note in createNoteHandler");
     }
-  }; // solved // Backend
+  }; // create notes in the backend // solved // Backend
 
   const handleNoteSaveClick = async () => {
     if (selectedNote && userData?.[0]?.id) {
@@ -131,12 +174,12 @@ const Notes = () => {
           note.id === updatedNote.id ? updatedNote : note
         );
         setNotes(updatedNotes);
-        console.log("Note saved:", updatedNote);
+        // console.log("Note saved:", updatedNote);
       } catch (error) {
         console.error("Failed to save the note:", error);
       }
     }
-  }; // solved // Backend
+  }; // note save click from backend // solved // Backend
 
   const handleNoteDeleteClick = async () => {
     if (selectedNote) {
@@ -152,25 +195,7 @@ const Notes = () => {
         console.error("Failed to delete the note:", error);
       }
     }
-  }; // solced // Backend
-
-  const handleRightArrow = () => {
-    const index = notes.indexOf(selectedNote);
-    if (index < notes.length - 1) {
-      setSelectedNote(notes[index + 1]);
-    }
-  }; // solved // Frontend
-
-  const handleLeftArrow = () => {
-    const index = notes.indexOf(selectedNote);
-    if (index > 0) {
-      setSelectedNote(notes[index - 1]);
-    }
-  }; // solved // Frontend
-
-  // useEffect(() => {
-  //   console.log(userData[0]);
-  // });
+  }; // note note delete from backend // solced // Backend
 
   return (
     <div className="flex flex-col h-screen max-w-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
@@ -178,6 +203,21 @@ const Notes = () => {
       <header className="flex justify-between items-center py-4">
         <h1 className="text-xl font-bold sm:appearance-none">NotesLocker</h1>
         <div className="flex flex-row gap-2">
+          {/* Auto Save */}
+          <button
+            className={`rounded-md border ${
+              autoSave ? "bg-gray-100 delay-150" : ""
+            }`}
+            onClick={handleAutoSave}
+          >
+            {width < 768 ? (
+              <p className="p-3">
+                <LuRefreshCw />
+              </p>
+            ) : (
+              <p className="py-2 px-3">Auto Save</p>
+            )}
+          </button>
           {/* Change Password */}
           <button className="rounded-md border" onClick={handleOpen}>
             {width < 768 ? (
@@ -231,6 +271,11 @@ const Notes = () => {
           {/* Scrollable container */}
           <div className="w-full overflow-x-scroll whitespace-nowrap max-w-full">
             <div className="flex flex-row gap-2 items-center">
+              {notes.length === 0 && (
+                <p className="text-gray-500">
+                  No notes available. Create a new note to get started!
+                </p>
+              )}
               {notes.map((note, index) => (
                 <div
                   key={index}
@@ -244,13 +289,16 @@ const Notes = () => {
               ))}
             </div>
           </div>
-
           {/* Right arrow */}
           <button className="px-3 py-3 rounded-md" onClick={handleRightArrow}>
             <LuArrowRight />
           </button>
           {/* Create note */}
-          <button className="px-3 py-3 rounded-md" onClick={createNoteHandler}>
+          <button
+            className="px-3 py-3 rounded-md"
+            aria-label="Create new note"
+            onClick={createNoteHandler}
+          >
             <LuCirclePlus />
           </button>
           {/* three dot */}
@@ -258,13 +306,23 @@ const Notes = () => {
             <LuEllipsis />
           </button>
         </div>
-        <div className="w-full border p-2 rounded-md">
+        {/* note name section */}
+        <div className="flex flex-row w-full border p-2 rounded-md">
           <input
             type="text"
             value={selectedNote ? selectedNote.name : ""}
             className="w-full text-xl font-bold px-2 py-0.5"
             onChange={handleNoteNameChange}
           />
+          <button className="" onClick={handleSaveNoteNameClick}>
+            {width < 768 ? (
+              <p className="px-2">
+                <LuBookmark />
+              </p>
+            ) : (
+              <p className="py-2 px-3">Done</p>
+            )}
+          </button>
         </div>
       </section>
 

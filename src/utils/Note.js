@@ -65,7 +65,7 @@ export const updateText = async (user, noteId, newText) => {
       transaction.update(userRef, { notes: updatedNotes });
     });
 
-    ToastNotification.success("Note text updated successfully!");
+    // ToastNotification.success("Note text updated successfully!");
   } catch (error) {
     // console.error("Error in updateText:", error.message);
     ToastNotification.warning(`Failed to update note text: ${error.message}`);
@@ -145,7 +145,7 @@ export const updateNoteName = async (userName, noteName, newName) => {
       transaction.update(userRef, { notes: updatedNotes });
     });
 
-    ToastNotification.success("Note name updated successfully!");
+    // ToastNotification.success("Note name updated successfully!");
   } catch (error) {
     ToastNotification.warning(`Failed to update note name: ${error.message}`);
     // console.error("Error in updateNoteName:", error);
