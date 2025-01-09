@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { MdOutlineWbSunny } from "react-icons/md";
+import { MdNightlightRound, MdOutlineWbSunny } from "react-icons/md";
 import {
   LuCirclePlus,
   LuArrowLeft,
@@ -40,6 +40,10 @@ const Notes = () => {
   const handleConfirm = () => {
     setConfirmVisible(false);
   };
+
+  // Dark mode enable
+  const [darkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
@@ -198,146 +202,171 @@ const Notes = () => {
   }; // note note delete from backend // solced // Backend
 
   return (
-    <div className="flex flex-col h-screen max-w-screen bg-white text-gray-800 px-4 md:px-12 lg:px-48 xl:px-80">
-      {/* Header */}
-      <header className="flex justify-between items-center py-4">
-        <h1 className="text-xl font-bold sm:appearance-none">NotesLocker</h1>
-        <div className="flex flex-row gap-2">
-          {/* Auto Save */}
-          <button
-            className={`rounded-md border ${
-              autoSave ? "bg-gray-100 delay-150" : ""
-            }`}
-            onClick={handleAutoSave}
-          >
-            {width < 768 ? (
-              <p className="p-3">
-                <LuRefreshCw />
-              </p>
-            ) : (
-              <p className="py-2 px-3">Auto Save</p>
-            )}
-          </button>
-          {/* Change Password */}
-          <button className="rounded-md border" onClick={handleOpen}>
-            {width < 768 ? (
-              <p className="p-3">
-                <LuUserPen />
-              </p>
-            ) : (
-              <p className="py-2 px-3">Change Password</p>
-            )}
-          </button>
-          {/* Save Button */}
-          <button
-            className="rounded-md border bg-black text-white"
-            onClick={handleNoteSaveClick}
-          >
-            {width < 768 ? (
-              <p className="p-3">
-                <LuSave />
-              </p>
-            ) : (
-              <p className="py-2 px-3">Save</p>
-            )}
-          </button>
-          {/* Delete Button */}
-          <button
-            className="rounded-md border bg-red-500 text-white"
-            onClick={handleNoteDeleteClick}
-          >
-            {width < 768 ? (
-              <p className="p-3">
-                <LuTrash2 />
-              </p>
-            ) : (
-              <p className="py-2 px-3">Delete</p>
-            )}
-          </button>
-          {/* Night mode button */}
-          <button className="p-3 rounded-md border">
-            <MdOutlineWbSunny />
-          </button>
-        </div>
-      </header>
-
-      {/* Next Section */}
-      <section className="flex flex-col py-4 gap-2">
-        <div className="flex flex-row gap-2 items-center justify-between">
-          {/* Left arrow */}
-          <button className="px-3 py-3 rounded-md" onClick={handleLeftArrow}>
-            <LuArrowLeft />
-          </button>
-          {/* Scrollable container */}
-          <div className="w-full overflow-x-scroll whitespace-nowrap max-w-full">
-            <div className="flex flex-row gap-2 items-center">
-              {notes.length === 0 && (
-                <p className="text-gray-500">
-                  No notes available. Create a new note to get started!
+    <div
+      className={`flex flex-col h-screen max-w-screen  px-4 md:px-12 lg:px-48 xl:px-80 ${
+        darkMode ? "dark bg-slate-950" : "bg-white"
+      }`}
+    >
+      <div className="flex flex-col h-screen text-gray-800 dark:text-gray-100">
+        {/* Header */}
+        <header className="flex justify-between items-center py-4">
+          <h1 className="text-xl font-bold sm:appearance-none">NotesLocker</h1>
+          <div className="flex flex-row gap-2">
+            {/* Auto Save */}
+            <button
+              className={`rounded-md border dark:border-slate-500 ${
+                autoSave ? "bg-gray-100 dark:bg-gray-700 delay-150" : ""
+              }`}
+              onClick={handleAutoSave}
+            >
+              {width < 768 ? (
+                <p className="p-3">
+                  <LuRefreshCw />
                 </p>
+              ) : (
+                <p className="py-2 px-3">Auto Save</p>
               )}
-              {notes.map((note, index) => (
-                <div
-                  key={index}
-                  className={`flex px-3 border items-center rounded-md justify-center cursor-pointer ${
-                    selectedNote === note ? "bg-gray-100" : ""
-                  }`}
-                  onClick={() => handleNoteClick(note)}
-                >
-                  <p className="py-2">{note.name}</p>
-                </div>
-              ))}
-            </div>
+            </button>
+            {/* Change Password */}
+            <button
+              className="rounded-md border dark:border-slate-500"
+              onClick={handleOpen}
+            >
+              {width < 768 ? (
+                <p className="p-3">
+                  <LuUserPen />
+                </p>
+              ) : (
+                <p className="py-2 px-3">Change Password</p>
+              )}
+            </button>
+            {/* Save Button */}
+            <button
+              className="rounded-md border bg-black dark:bg-gray-400 text-white dark:border-slate-500"
+              onClick={handleNoteSaveClick}
+            >
+              {width < 768 ? (
+                <p className="p-3">
+                  <LuSave />
+                </p>
+              ) : (
+                <p className="py-2 px-3">Save</p>
+              )}
+            </button>
+            {/* Delete Button */}
+            <button
+              className="rounded-md border bg-red-500 text-white dark:border-slate-500"
+              onClick={handleNoteDeleteClick}
+            >
+              {width < 768 ? (
+                <p className="p-3">
+                  <LuTrash2 />
+                </p>
+              ) : (
+                <p className="py-2 px-3">Delete</p>
+              )}
+            </button>
+            {/* Night mode button */}
+            <button
+              className="p-3 rounded-md border dark:border-slate-500"
+              onClick={toggleDarkMode}
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? (
+                <MdOutlineWbSunny className="text-yellow-500" />
+              ) : (
+                <MdNightlightRound className="text-gray-500" />
+              )}
+            </button>
           </div>
-          {/* Right arrow */}
-          <button className="px-3 py-3 rounded-md" onClick={handleRightArrow}>
-            <LuArrowRight />
-          </button>
-          {/* Create note */}
-          <button
-            className="px-3 py-3 rounded-md"
-            aria-label="Create new note"
-            onClick={createNoteHandler}
-          >
-            <LuCirclePlus />
-          </button>
-          {/* three dot */}
-          <button className="px-3 py-3 rounded-md border">
-            <LuEllipsis />
-          </button>
-        </div>
-        {/* note name section */}
-        <div className="flex flex-row w-full border p-2 rounded-md">
-          <input
-            type="text"
-            value={selectedNote ? selectedNote.name : ""}
-            className="w-full text-xl font-bold px-2 py-0.5"
-            onChange={handleNoteNameChange}
-          />
-          <button className="" onClick={handleSaveNoteNameClick}>
-            {width < 768 ? (
-              <p className="px-2">
-                <LuBookmark />
-              </p>
-            ) : (
-              <p className="py-2 px-3">Done</p>
-            )}
-          </button>
-        </div>
-      </section>
+        </header>
 
-      {/* Textarea */}
-      <textarea
-        name="body"
-        value={selectedNote ? selectedNote.text : ""}
-        onChange={handleNoteTextChange}
-        className="flex-grow w-full border p-4 mb-4 rounded-md"
-      />
-      <ConfirmPassword
-        isVisible={isConfirmVisible}
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+        {/* Next Section */}
+        <section className="flex flex-col py-4 gap-2">
+          <div className="flex flex-row gap-2 items-center justify-between">
+            {/* Left arrow */}
+            <button
+              className="px-3 py-3 rounded-md  hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={handleLeftArrow}
+            >
+              <LuArrowLeft />
+            </button>
+            {/* Scrollable container */}
+            <div className="w-full overflow-x-scroll whitespace-nowrap max-w-full">
+              <div className="flex flex-row gap-2 items-center">
+                {notes.length === 0 && (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No notes available. Create a new note to get started!
+                  </p>
+                )}
+                {notes.map((note, index) => (
+                  <div
+                    key={index}
+                    className={`flex px-2 border items-center rounded-md justify-center cursor-pointer dark:border-slate-500 ${
+                      selectedNote === note
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`}
+                    onClick={() => handleNoteClick(note)}
+                  >
+                    <p className="py-2">{note.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Right arrow */}
+            <button
+              className="px-3 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+              onClick={handleRightArrow}
+            >
+              <LuArrowRight />
+            </button>
+            {/* Create note */}
+            <button
+              className="px-3 py-3 rounded-md  hover:bg-gray-100 dark:hover:bg-gray-700"
+              aria-label="Create new note"
+              onClick={createNoteHandler}
+            >
+              <LuCirclePlus />
+            </button>
+            {/* three dot */}
+            <button className="px-3 py-3 rounded-md border dark:border-slate-500">
+              <LuEllipsis />
+            </button>
+          </div>
+          {/* Note name section */}
+          <div className="flex flex-row w-full border px-2 py-0.5 rounded-md dark:border-slate-500">
+            <input
+              type="text"
+              value={selectedNote ? selectedNote.name : ""}
+              className="w-full text-xl font-bold px-2 py-0.5 bg-white dark:bg-slate-950 outline-none "
+              onChange={handleNoteNameChange}
+            />
+            <button className="" onClick={handleSaveNoteNameClick}>
+              {width < 768 ? (
+                <p className="px-2">
+                  <LuBookmark />
+                </p>
+              ) : (
+                <p className="py-2 px-3">Done</p>
+              )}
+            </button>
+          </div>
+        </section>
+
+        {/* Textarea */}
+        <textarea
+          name="body"
+          value={selectedNote ? selectedNote.text : ""}
+          onChange={handleNoteTextChange}
+          className="flex-grow w-full border p-4 mb-4 rounded-md outline-none bg-white dark:border-slate-500 dark:bg-slate-950 text-gray-800 dark:text-gray-100"
+        />
+        <ConfirmPassword
+          isVisible={isConfirmVisible}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </div>
     </div>
   );
 };

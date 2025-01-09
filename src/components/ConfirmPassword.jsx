@@ -36,7 +36,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-4 w-80"
+        className="bg-white dark:bg-slate-800  rounded-lg shadow-lg p-4 w-80"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold mb-4 text-start">Change Password</h2>
@@ -45,18 +45,18 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter Password"
-          className="w-full border rounded-md px-3 py-2 mb-4"
+          className="w-full border rounded-md px-3 py-2 mb-4 outline-none"
         />
         <input
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder="Re-Enter Password"
-          className="w-full border rounded-md px-3 py-2 mb-4"
+          className="w-full border rounded-md px-3 py-2 mb-4 outline-none"
         />
         <button
           onClick={handleConfirm}
-          className="px-4 py-2 w-full text-center bg-black text-white rounded-md"
+          className="px-4 py-2 w-full text-center bg-black dark:bg-gray-500 text-white rounded-md  dark:border-slate-500"
         >
           Confirm
         </button>
