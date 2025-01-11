@@ -204,7 +204,7 @@ const Notes = () => {
   return (
     <div
       className={`flex flex-col h-screen max-w-screen  px-4 md:px-12 lg:px-48 xl:px-80 ${
-        darkMode ? "dark bg-slate-950" : "bg-white"
+        darkMode ? "dark bg-black" : "bg-white"
       }`}
     >
       <div className="flex flex-col h-screen text-gray-800 dark:text-gray-100">
@@ -339,7 +339,7 @@ const Notes = () => {
             <input
               type="text"
               value={selectedNote ? selectedNote.name : ""}
-              className="w-full text-xl font-bold px-2 py-0.5 bg-white dark:bg-slate-950 outline-none "
+              className="w-full text-xl font-bold px-2 py-0.5 bg-white dark:bg-black outline-none "
               onChange={handleNoteNameChange}
             />
             <button className="" onClick={handleSaveNoteNameClick}>
@@ -359,7 +359,7 @@ const Notes = () => {
           name="body"
           value={selectedNote ? selectedNote.text : ""}
           onChange={handleNoteTextChange}
-          className="flex-grow w-full border p-4 mb-4 rounded-md outline-none bg-white dark:border-slate-500 dark:bg-slate-950 text-gray-800 dark:text-gray-100"
+          className="flex-grow w-full border p-4 mb-4 rounded-md outline-none bg-white dark:border-slate-500 dark:bg-black text-gray-800 dark:text-gray-100"
         />
         <ConfirmPassword
           isVisible={isConfirmVisible}
