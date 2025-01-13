@@ -10,30 +10,33 @@ import ToastNotification from "../components/ToastNotification";
 
 const faqData = [
   {
-    question: "What is zero knowledge app?",
+    question: "Personal Information of the user !",
     answer:
-      "A Zero-Knowledge (ZK) App leverages zero-knowledge proofs (ZKPs) to ensure data privacy and security while enabling verifiable interactions. We don't store any of your personal information or your password. We only encrypt text which never leaves your browser.",
+      "We do not store any personal information of the user. The user is completely anonymous.",
   },
   {
     question: "How can I recover my site if I forget my password?",
     answer:
-      "Unfortunately, passwords are not stored. Recovery is not possible without the password.",
+      "Unfortunately, there is no other way to reset your password. Recovery is not possible without the password.",
   },
   {
     question: "How can I backup my notes?",
-    answer:
-      "You can export your notes as encrypted files and store them locally.",
+    answer: "You can export your notes as text files and store them locally.",
   },
   {
     question: "How can I share my notes?",
     answer:
-      "Share encrypted files or decrypt them locally to share readable text.",
+      "Right now there is no way to share my notes, but you can share username and password",
   },
   {
-    question:
-      "How do you verify the password if it is never sent to the server?",
+    question: "How do you verify the user",
     answer:
-      "The password is used to decrypt the data locally, ensuring that it is never transmitted or stored.",
+      "The password is used to check wheather the entered password is correct or not.",
+  },
+  {
+    question: "Upcomin updates",
+    answer:
+      "there is going to be an option to share the notes and the notes can be visible without password if you choose to share",
   },
 ];
 
@@ -42,13 +45,13 @@ const features = [
     icon: <MdLockOutline size={24} className="text-gray-600" />,
     title: "Secure Password Management",
     description:
-      "Your password is securely stored in hashed form and used to encrypt and decrypt your notes. This ensures your password and notes are protected.",
+      "Your password is securely stored into Firebase. This ensures your password and notes are protected.",
   },
   {
     icon: <LuGlobeLock size={24} className="text-gray-600" />,
     title: "Privacy-Focused Storage",
     description:
-      "Your note titles and content are hashed and encrypted before being stored, ensuring data privacy and security.",
+      "Your note titles and content are being stored, ensuring data privacy and security.",
   },
   {
     icon: <LuIdCard size={24} className="text-gray-600" />,
@@ -97,7 +100,7 @@ const Home = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="flex flex-col items-center justify-center text-center py-24">
+      <main className="flex flex-col items-center justify-center text-center py-32">
         <button
           className="py-1 px-4 rounded-full hover:bg-slate-100 border my-10"
           onClick={() =>
@@ -134,7 +137,7 @@ const Home = () => {
       </main>
 
       {/* Quickstart Section */}
-      <section className="py-16 w-full">
+      <section className="py-16 pb-10 w-full">
         <h3 className="text-2xl font-bold text-center mb-8">Quickstart</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {["Step 1", "Step 2", "Step 3"].map((step, index) => (
@@ -205,7 +208,7 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="pt-10 text-center py-16 text-gray-500 border-t">
+      <footer className="pt-10 px-10 text-center py-16 text-gray-500 border-t">
         Built by{" "}
         <span
           className="text-gray-800 font-semibold cursor-pointer"
