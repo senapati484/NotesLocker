@@ -1,8 +1,6 @@
-# NotesLocker
+# NotesLocker 🚀
 
 NotesLocker is a lightweight, secure, and open-source notepad application built with React and Firebase. It enables users to create, update, and delete notes securely without storing any personal information. The application uses Firebase Firestore for data storage and ensures robust protection for user data.
-
-![](https://github.com/senapati484/NotesLocker/tree/main/public/Light-mode.gif)
 
 ## Features
 
@@ -18,6 +16,14 @@ NotesLocker is a lightweight, secure, and open-source notepad application built 
 - **Check Out**: You can checkout the live preview from here.
 - **Hosting**: This website is hosted on vercel.
 - **Database**: There we using the Firebase database.
+
+#### Light Mode
+
+![](public/Light-mode.gif)
+
+#### Dark Mode
+
+![](public/Dark-mode.gif)
 
 ## Getting Started
 
