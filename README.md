@@ -11,18 +11,24 @@ NotesLocker is a lightweight, secure, and open-source notepad application built 
 - **Dark Mode Support**: Enjoy a theme that suits your preferences.
 - **Auto-Save Functionality**: Never lose your progress.
 
+## Live Preview [Link 🚀](https://noteslocker.vercel.app)
+
+- **Check Out**: You can checkout the live preview from here.
+- **Hosting**: This website is hosted on vercel.
+- **Database**: There we using the Firebase database.
+
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/)
-- npm or yarn
+- [npm](https://www.npmjs.com) or [yarn](https://classic.yarnpkg.com/lang/en/docs/)
 
 ### Installation
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/NotesLocker.git
+   git clone https://github.com/senapati484/NotesLocker
    cd NotesLocker
    ```
 2. Install dependencies:
@@ -93,6 +99,8 @@ A reusable component for collapsible sections, used for displaying FAQs on the h
 - **`fetchUser.js`**: Defines the `fetchUser` function to fetch user data from Firebase Firestore.
 - **`Note.js`**: Contains functions to create, update, and delete notes, as well as update user passwords in Firebase Firestore.
 - **`setUser.js`**: Defines the `setUser` function to register new users and store their data in Firebase Firestore.
+
+## Doccumentation [click 🚀](https://github.com/senapati484/NotesLocker/README.md)
 
 ## Contributing
 
