@@ -18,7 +18,7 @@ We recommend using the latest supported versions to ensure optimal security and 
 If you discover a vulnerability in NotesLocker, please follow the steps below to report it securely:
 
 1. **Contact Us**:  
-   Email us at **security@noteslocker.dev** with the details of the vulnerability. Use "Vulnerability Report" as the subject line.
+   Email us at **sayansenapaticoder@gmail.com** with the details of the vulnerability. Use "Vulnerability Report" as the subject line.
 
 2. **Provide Details**:  
    Include the following in your report:
