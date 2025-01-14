@@ -108,7 +108,7 @@ A reusable component for collapsible sections, used for displaying FAQs on the h
 - **`Note.js`**: Contains functions to create, update, and delete notes, as well as update user passwords in Firebase Firestore.
 - **`setUser.js`**: Defines the `setUser` function to register new users and store their data in Firebase Firestore.
 
-## Doccumentation [click 🚀](https://github.com/senapati484/NotesLocker/README.md)
+## Doccumentation [click 🚀](README.md)
 
 ## Contributing
 
