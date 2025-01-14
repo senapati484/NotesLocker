@@ -108,8 +108,6 @@ A reusable component for collapsible sections, used for displaying FAQs on the h
 - **`Note.js`**: Contains functions to create, update, and delete notes, as well as update user passwords in Firebase Firestore.
 - **`setUser.js`**: Defines the `setUser` function to register new users and store their data in Firebase Firestore.
 
-## Doccumentation [click 🚀](README.md)
-
 ## Contributing
 
 Contributions are welcome! Please fork the repository, make your changes, and create a pull request. Ensure that your changes align with the project's goals and adhere to best practices.
