@@ -2,20 +2,40 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Below is a table of the currently supported versions of NotesLocker and their security update status:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 5.1.x   | ✅ Supported        |
+| 5.0.x   | ❌ Not Supported    |
+| 4.0.x   | ✅ Supported        |
+| < 4.0   | ❌ Not Supported    |
+
+We recommend using the latest supported versions to ensure optimal security and performance.
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you discover a vulnerability in NotesLocker, please follow the steps below to report it securely:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+1. **Contact Us**:  
+   Email us at **security@noteslocker.dev** with the details of the vulnerability. Use "Vulnerability Report" as the subject line.
+
+2. **Provide Details**:  
+   Include the following in your report:
+   - Description of the vulnerability.
+   - Steps to reproduce the issue.
+   - Potential impact of the vulnerability.
+   - Any additional resources or screenshots that might help.
+
+3. **What to Expect**:  
+   - Acknowledgment of your report within **48 hours**.
+   - Regular updates on the progress of the investigation.
+   - Resolution timeline or mitigation strategies, if applicable.
+
+4. **Confidentiality**:  
+   We respect the privacy of vulnerability reporters. Your identity and information will remain confidential unless you agree to disclosure.
+
+5. **Responsible Disclosure**:  
+   To ensure the security of all users, please do not publicly disclose vulnerabilities until they are resolved and users have been notified.
+
+Thank you for helping make NotesLocker secure and reliable for everyone!
