@@ -5,6 +5,7 @@ import ToastNotification from "../components/ToastNotification";
 import { fetchUser } from "../utils/fetchUser";
 import { hashPassword } from "../utils/crypto";
 import { LuLock, LuArrowRight } from "react-icons/lu";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Login = ({ onLogin }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
   // Get user data from the previous page
   const location = useLocation();
@@ -119,9 +121,18 @@ const Login = ({ onLogin }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-              Password
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsForgotModalOpen(true)}
+                className="text-[11px] font-semibold text-[#ff5f03] hover:text-[#e04f02] transition-colors focus:outline-none"
+              >
+                Forgot Password?
+              </button>
+            </div>
             <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
               <span className="pl-4 text-slate-400 dark:text-slate-500 shrink-0">
                 <LuLock className="w-4 h-4" />
@@ -162,6 +173,13 @@ const Login = ({ onLogin }) => {
           </button>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isVisible={isForgotModalOpen}
+        onClose={() => setIsForgotModalOpen(false)}
+        username={username}
+      />
     </div>
   );
 };

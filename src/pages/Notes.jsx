@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import { 
   LuSearch, LuPlus, LuLogOut, LuTrash2, LuLock, LuSun, LuMoon, 
-  LuChevronLeft, LuCheck, LuInfo, LuFileText
+  LuChevronLeft, LuCheck, LuInfo, LuFileText, LuMail
 } from "react-icons/lu";
 import {
   deleteNote,
@@ -10,6 +10,7 @@ import {
   updateNote
 } from "../utils/Note";
 import ConfirmPassword from "../components/ConfirmPassword";
+import RecoveryEmailModal from "../components/RecoveryEmailModal";
 import ToastNotification from "../components/ToastNotification";
 
 const Notes = () => {
@@ -33,6 +34,7 @@ const Notes = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [savingStatus, setSavingStatus] = useState("idle"); // 'idle' | 'unsaved' | 'saving' | 'saved' | 'error'
   const [isConfirmVisible, setConfirmVisible] = useState(false);
+  const [isRecoveryModalOpen, setIsRecoveryModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   // Track dark mode
@@ -342,6 +344,13 @@ const Notes = () => {
               <LuLock className="w-4 h-4" />
             </button>
             <button
+              onClick={() => setIsRecoveryModalOpen(true)}
+              className="p-2.5 text-slate-500 hover:text-[#ff5f03] dark:text-slate-400 dark:hover:text-[#ff5f03] rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              title="Recovery Settings"
+            >
+              <LuMail className="w-4 h-4" />
+            </button>
+            <button
               onClick={handleLogout}
               className="p-2.5 text-rose-500 hover:text-rose-600 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
               title="Log Out"
@@ -449,6 +458,13 @@ const Notes = () => {
         isVisible={isConfirmVisible}
         onClose={handleClose}
         onConfirm={handleClose}
+      />
+
+      {/* RECOVERY EMAIL MODAL */}
+      <RecoveryEmailModal
+        isVisible={isRecoveryModalOpen}
+        onClose={() => setIsRecoveryModalOpen(false)}
+        currentUser={currentUser}
       />
 
       {/* DELETE CONFIRMATION MODAL */}
