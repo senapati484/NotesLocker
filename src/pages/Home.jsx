@@ -341,7 +341,7 @@ const Home = () => {
             {/* Claim Locker Input Form Card */}
             <div className="p-1.5 bg-white/90 dark:bg-slate-900/95 border border-gray-200/50 dark:border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-full flex items-center max-w-md w-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
               <div className="flex items-center flex-1 min-w-0 pl-4">
-                <span className="text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.app/</span>
+                <span className="text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.vercel.app/</span>
                 <input
                   ref={inputRef}
                   type="text"
