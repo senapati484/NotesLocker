@@ -108,7 +108,7 @@ export default async function handler(req, res) {
       from: `"NotesLocker" <${process.env.SMTP_USER}>`,
       to: targetEmail,
       subject: `NotesLocker Verification Code: ${otp}`,
-      text: `Your verification code is: ${otp}\n\nThis code will expire in 10 minutes. Use this to ${actionText}.`,
+      text: `Your verification code is: ${otp}\n\nThis code will expire in 10 minutes. Use this to ${actionText}.\n\n---\nNotesLocker: https://noteslocker.vercel.app\nGitHub Repository: https://github.com/senapati484/NotesLocker`,
       html: `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
           <h2 style="color: #ff5f03; font-weight: bold; margin-bottom: 20px; margin-top: 0; font-family: Outfit, sans-serif;">NotesLocker</h2>
@@ -121,9 +121,18 @@ export default async function handler(req, res) {
               ${otp}
             </span>
           </div>
-          <p style="font-size: 12px; color: #64748b; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-            This verification code is valid for 10 minutes. If you did not make this request, please ignore this email.
-          </p>
+          <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center;">
+            <p style="font-size: 13px; color: #64748b; margin: 0 0 10px 0;">
+              Securely store and lock your notes with <strong>NotesLocker</strong>.
+            </p>
+            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 15px;">
+              <a href="https://noteslocker.vercel.app" style="color: #ff5f03; text-decoration: none; margin-right: 15px; font-weight: bold;">Visit NotesLocker</a>
+              <a href="https://github.com/senapati484/NotesLocker" style="color: #ff5f03; text-decoration: none; font-weight: bold;">GitHub Repository</a>
+            </div>
+            <p style="font-size: 11px; color: #94a3b8; margin: 15px 0 0 0; border-top: 1px dashed #f1f5f9; padding-top: 10px;">
+              This verification code is valid for 10 minutes. If you did not make this request, please ignore this email.
+            </p>
+          </div>
         </div>
       `,
     };
