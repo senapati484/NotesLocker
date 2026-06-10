@@ -1,18 +1,19 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "../components/ToastNotification";
 
 export const fetchUser = async (user) => {
   try {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("name", "==", user));
-    const querySnapshot = await getDocs(q);
+    if (!user) return { exists: false };
+    const userRef = doc(db, "users", user);
+    const docSnap = await getDoc(userRef);
 
-    if (!querySnapshot.empty) {
-      const userData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const userData = [{
+        id: docSnap.id,
+        ...data,
+      }];
       return { exists: true, userData };
     } else {
       return { exists: false };

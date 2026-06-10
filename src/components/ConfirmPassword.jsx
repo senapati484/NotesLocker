@@ -1,68 +1,145 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useState } from "react";
+import PropTypes from "prop-types";
 import ToastNotification from "./ToastNotification";
 import { useLocation } from "react-router-dom";
 import { updatePassword } from "../utils/Note";
+import { hashPassword } from "../utils/crypto";
+import { LuLock, LuShieldCheck, LuX } from "react-icons/lu";
 
-/* eslint-disable react/prop-types */
 const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
-  if (!isVisible) return null;
-
   const location = useLocation();
   const { userData } = location.state || {};
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const handleConfirm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isVisible) return null;
+
+  const validatePassword = (pwd) => {
+    const errors = [];
+    if (!/[a-zA-Z]/.test(pwd)) errors.push("at least one letter");
+    if (!/[0-9]/.test(pwd)) errors.push("at least one number");
+    if (pwd.length < 5) errors.push("at least 5 characters");
+
+    if (errors.length > 0) {
+      ToastNotification.error(`Password requires: ${errors.join(", ")}.`);
+      return false;
+    }
+    return true;
+  };
+
+  const handleConfirm = async () => {
     if (!password) {
       ToastNotification.error("Please enter a password");
-    } else {
-      if (password.length < 3) {
-        ToastNotification.error("Password must be at least 3 characters long");
-      } else {
-        if (password == confirmPassword) {
-          updatePassword(userData[0].name, password);
-          onConfirm(password);
-        } else {
-          ToastNotification.error("Passwords are not maching");
-        }
-      }
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      ToastNotification.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const hashedPassword = await hashPassword(password);
+      await updatePassword(userData[0].name, hashedPassword);
+      onConfirm(password);
+      onClose();
+    } catch (error) {
+      console.error(error);
+      ToastNotification.error("Failed to update password.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4 transition-all duration-300"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-800  rounded-lg shadow-lg p-4 w-80"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 w-full max-w-sm relative transition-all duration-300 transform scale-100"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold mb-4 text-start">Change Password</h2>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter Password"
-          className="w-full border rounded-md px-3 py-2 mb-4 outline-none"
-        />
-        <input
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Re-Enter Password"
-          className="w-full border rounded-md px-3 py-2 mb-4 outline-none"
-        />
         <button
-          onClick={handleConfirm}
-          className="px-4 py-2 w-full text-center bg-black dark:bg-gray-500 text-white rounded-md  dark:border-slate-500"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
-          Confirm
+          <LuX className="w-5 h-5" />
         </button>
+
+        <div className="flex flex-col items-center mb-6 mt-2">
+          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl mb-3 text-indigo-650 dark:text-indigo-400">
+            <LuShieldCheck className="w-7 h-7" />
+          </div>
+          <h2 className="text-xl font-bold font-display text-slate-800 dark:text-white">
+            Change Password
+          </h2>
+          <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-1">
+            Secure your locker. Make sure you remember it!
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+              New Password
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500">
+                <LuLock className="w-4 h-4" />
+              </span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter new password"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+              Confirm New Password
+            </label>
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500">
+                <LuLock className="w-4 h-4" />
+              </span>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handleConfirm}
+            disabled={isSubmitting}
+            className="w-full py-3 bg-indigo-650 hover:bg-indigo-500 active:scale-[0.98] text-white text-sm font-medium rounded-xl shadow-lg shadow-indigo-650/15 hover:shadow-indigo-655/25 transition-all duration-200 disabled:opacity-50 mt-4"
+          >
+            {isSubmitting ? "Updating Password..." : "Update Password"}
+          </button>
+        </div>
       </div>
     </div>
   );
+};
+
+ConfirmPassword.propTypes = {
+  isVisible: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
 };
 
 export default ConfirmPassword;

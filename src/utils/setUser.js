@@ -1,15 +1,17 @@
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "../components/ToastNotification";
+import { hashPassword } from "./crypto";
 
 export const setUser = async (user, password) => {
   try {
     if (!user) throw new Error("User name is required.");
 
+    const hashedPassword = await hashPassword(password);
     const userRef = doc(db, "users", user);
     await setDoc(userRef, {
       name: user,
-      password: password, // Hash this password in next step using
+      password: hashedPassword,
       notes: [
         {
           id: new Date().toISOString(),

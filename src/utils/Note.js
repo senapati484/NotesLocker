@@ -37,9 +37,11 @@ export const createNote = async (user, noteName) => {
     });
 
     ToastNotification.success(`Note "${noteName}" created successfully!`);
+    return newNote;
   } catch (error) {
     console.log(error);
     ToastNotification.warning(`Failed to create note: ${error.message}`);
+    throw error;
   }
 };
 
@@ -159,8 +161,10 @@ export const updateName = async (user, noteId, newName) => {
     if (!noteId) throw new Error("Note ID is required.");
 
     const userRef = doc(db, "users", user);
+    const userSnapshot = await getDoc(userRef);
+    if (!userSnapshot.exists()) throw new Error("User not found.");
 
-    const userDoc = (await userRef.get()).data();
+    const userDoc = userSnapshot.data();
     const notes = userDoc.notes.map((note) =>
       note.id === noteId
         ? { ...note, name: newName, updatedAt: new Date().toISOString() }
@@ -175,3 +179,30 @@ export const updateName = async (user, noteId, newName) => {
     ToastNotification.warning("Failed to update note name! Please try again.");
   }
 }; //not implemented
+
+// Update note content and name in a single transaction
+export const updateNote = async (user, noteId, newText, newName) => {
+  try {
+    if (!user) throw new Error("User name is required.");
+    if (!noteId) throw new Error("Note ID is required.");
+
+    const userRef = doc(db, "users", user);
+
+    await runTransaction(db, async (transaction) => {
+      const userSnapshot = await transaction.get(userRef);
+      if (!userSnapshot.exists()) throw new Error("User not found.");
+
+      const userDoc = userSnapshot.data();
+      const updatedNotes = userDoc.notes.map((note) =>
+        note.id === noteId
+          ? { ...note, text: newText, name: newName, updatedAt: new Date().toISOString() }
+          : note
+      );
+
+      transaction.update(userRef, { notes: updatedNotes });
+    });
+  } catch (error) {
+    ToastNotification.warning(`Failed to save note changes: ${error.message}`);
+    throw error;
+  }
+};
