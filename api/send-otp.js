@@ -1,20 +1,29 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { initializeFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
-const firebaseConfig = {
-  apiKey: process.env.VITE_API_KEY,
-  authDomain: process.env.VITE_APP_DOMAIN,
-  projectId: process.env.VITE_PROJECT_ID,
-  storageBucket: process.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_APP_ID,
-  measurementId: process.env.VITE_MEASURENENT_ID,
-};
+let app;
+let db;
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+function getDb() {
+  if (!db) {
+    const firebaseConfig = {
+      apiKey: process.env.VITE_API_KEY,
+      authDomain: process.env.VITE_APP_DOMAIN,
+      projectId: process.env.VITE_PROJECT_ID,
+      storageBucket: process.env.VITE_STORAGE_BUCKET,
+      messagingSenderId: process.env.VITE_MESSAGING_SENDER_ID,
+      appId: process.env.VITE_APP_ID,
+      measurementId: process.env.VITE_MEASURENENT_ID,
+    };
+    app = initializeApp(firebaseConfig);
+    db = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    });
+  }
+  return db;
+}
 
 export default async function handler(req, res) {
   // Enable CORS
@@ -42,7 +51,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const userRef = doc(db, "users", username);
+    const userRef = doc(getDb(), "users", username);
     const userSnapshot = await getDoc(userRef);
 
     if (!userSnapshot.exists()) {
