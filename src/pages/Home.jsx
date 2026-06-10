@@ -522,19 +522,25 @@ const Home = () => {
       </section>
 
       {/* SECTION 4: FAQs */}
-      <section id="faqs" className="bg-white dark:bg-slate-950 py-20 sm:py-28 transition-colors duration-500 border-t border-slate-200 dark:border-slate-800 relative z-20">
-        <div className="max-w-3xl mx-auto px-6">
-          {/* Header Row */}
-          <div className="flex items-center justify-center gap-3 mb-12">
-            <div className="w-6 h-6 rounded-full bg-slate-950 dark:bg-white text-white dark:text-slate-955 flex items-center justify-center text-[11px] font-bold">
+      <section id="faqs" className="bg-white dark:bg-slate-950 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          
+          {/* Badge row */}
+          <div className="flex items-center gap-3 mb-6 sm:mb-8">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">
               3
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 dark:text-white">
-              Frequently Asked Questions
-            </h2>
+            <span className="border border-gray-300 dark:border-slate-800 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium text-gray-900 dark:text-gray-300">
+              Support & Help
+            </span>
           </div>
 
-          <div className="space-y-4">
+          {/* Heading h2 */}
+          <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 dark:text-white mb-10 sm:mb-14 lg:mb-16">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="max-w-4xl space-y-4">
             {faqData.map((faq, index) => (
               <Collapsible key={index} question={faq.question} answer={faq.answer} />
             ))}
@@ -543,14 +549,14 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-slate-200 dark:border-slate-900 bg-[#F5F5F5] dark:bg-slate-950 text-center px-6 relative z-20 text-xs text-slate-400 dark:text-slate-500 transition-colors duration-500">
+      <footer className="py-12 border-t border-slate-200/50 dark:border-slate-900/60 bg-[#F5F5F5] dark:bg-slate-950 text-center px-6 relative z-20 text-xs text-slate-400 dark:text-slate-500 transition-colors duration-500">
         <p className="mb-2">
-          Redesigned by{" "}
+          Designed & Created by{" "}
           <a
             href="https://github.com/senapati484"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-slate-600 dark:text-slate-305 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            className="font-bold text-slate-600 dark:text-slate-300 hover:text-[#ff5f03] dark:hover:text-[#ff5f03] transition-colors"
           >
             @senapati484
           </a>
