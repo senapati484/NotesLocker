@@ -1,29 +1,86 @@
 # NotesLocker 🚀
 
-NotesLocker is a lightweight, secure, and open-source notepad application built with React and Firebase. It enables users to create, update, and delete notes securely without storing any personal information. The application uses Firebase Firestore for data storage and ensures robust protection for user data.
+NotesLocker is a lightweight, secure, and open-source cloud notepad application built with React and Firebase. It enables users to create, update, and sync notes securely without storing any personal information or raw passwords. 
+
+The application utilizes a **Zero-Knowledge End-to-End Encryption (E2EE)** model powered by the browser's native **Web Crypto API**. The server/database has absolutely zero access to your notes, locker passwords, or cryptographic keys.
+
+---
+
+## 🔒 Zero-Knowledge Cryptographic Architecture (E2EE)
+
+NotesLocker ensures absolute privacy by performing all encryption and decryption operations locally inside the user's browser. Plaintext notes and passwords are never transmitted over the network.
+
+### 1. Key Derivation (PBKDF2)
+When you register or log in, your browser takes your password and derives a 256-bit symmetric key using **PBKDF2 (Password-Based Key Derivation Function 2)**:
+* **Algorithm**: HMAC-SHA-256
+* **Iterations**: 100,000 rounds
+* **Salt**: A cryptographically random salt generated per locker (`passwordSalt`)
+This derived key is used solely in-memory to decrypt your locker's Master Key.
+
+### 2. Two-Tier Key Architecture
+To support seamless password changes without re-encrypting all notes, NotesLocker uses a two-tier key hierarchy:
+* **Master Key**: A random 256-bit key generated locally using `window.crypto.getRandomValues()`. Your notes are encrypted with this Master Key.
+* **Encrypted Master Key**: The Master Key is encrypted using your derived password key (AES-GCM) and stored in Firestore (`encryptedMasterKeyUser`).
+* **Password Change**: When changing your password, the browser simply decrypts the Master Key, derives a new key from your new password, re-encrypts the Master Key, and saves the new encrypted Master Key to Firestore. Your encrypted notes remain untouched.
+
+### 3. Symmetrical Notes Encryption (AES-GCM)
+All notes are serialized to a JSON string and encrypted using **AES-GCM (Advanced Encryption Standard in Galois/Counter Mode)** with 256-bit keys:
+* **Authentication**: AES-GCM provides authenticated encryption, guaranteeing data integrity and preventing unauthorized modification.
+* **Initialization Vector (IV)**: A unique, cryptographically secure 12-byte IV is generated for every save operation. This ensures that identical notes text never yields the same ciphertext.
+
+### 4. Client-Side Authentication (Zero-Knowledge Proof)
+To authenticate you without saving your password on the server:
+* On registration, your browser encrypts the validator string `"locker_unlocked"` with your derived password key to create `validatorCiphertext`.
+* On login, the browser attempts to decrypt `validatorCiphertext` using the derived key. If decryption succeeds and resolves to `"locker_unlocked"`, authentication is successful. The database never stores or receives a password hash.
+
+### 5. Secure Recovery Escrow & OTP
+Since we cannot reset your password, we offer a Zero-Knowledge recovery mechanism:
+* **Setup**: The browser generates a random **Recovery Key**, encrypts the Master Key with it (`encryptedMasterKeyRecovery`), and sends the plain Recovery Key to a serverless function (`/api/verify-otp`) alongside an email OTP.
+* **Escrow**: The server verifies the OTP, encrypts the Recovery Key using a private server-side key (`RECOVERY_ENCRYPTION_KEY` via AES-256-GCM), and stores it in Firestore (`serverRecoveryKey`).
+* **Recovery**: Upon entering the correct OTP during forgot password recovery, the server decrypts `serverRecoveryKey` and sends the plain Recovery Key to the browser. The browser decrypts `encryptedMasterKeyRecovery` to retrieve the Master Key, letting the user set a new password.
+
+---
+
+### Cryptographic Data Flow
+
+```
+                      === CLIENT BROWSER ===                      === FIRESTORE ===
+
+  Locker Password ──► PBKDF2 (100k rounds, Salt) ──► Password Key
+                                                         │
+    "locker_unlocked" ────────────► AES-GCM ────────────┼────────► validatorCiphertext
+                                                         │
+    Master Key (Random 256-bit) ──► AES-GCM ────────────┼────────► encryptedMasterKeyUser
+          │
+          ▼
+    Plain Notes (JSON) ───────────► AES-GCM ────────────┼────────► encryptedNotes
+                                                         │
+    Recovery Key (Random) ────────► AES-GCM (Master) ───┼────────► encryptedMasterKeyRecovery
+          │
+          ▼
+    Plain Recovery Key ──► [Server Encrypts (ENV Key)] ──┼────────► serverRecoveryKey
+```
+
+---
 
 ## Features
 
-- **Secure Password Management**: Protect your notes with a secure password.
-- **Privacy-Focused Storage**: No personal information is stored.
-- **No Account Required**: Start using NotesLocker without signing up.
-- **Open-Source Transparency**: Full source code available for review.
+- **End-to-End Encryption (E2EE)**: Complete data privacy.
+- **Privacy-Focused & Anonymous**: No personal email or signup details required to start using.
+- **Auto-Save Functionality**: Automatic in-flight syncing with Firestore.
+- **Secure Password Changes**: Update your password locally without decrypting/re-encrypting raw note assets.
+- **Open-Source Transparency**: Fully auditable codebase.
 - **Dark Mode Support**: Enjoy a theme that suits your preferences.
-- **Auto-Save Functionality**: Never lose your progress.
+
+---
 
 ## Live Preview [Link 🚀](https://noteslocker.vercel.app)
 
 - **Check Out**: You can checkout the live preview from here.
-- **Hosting**: This website is hosted on vercel.
-- **Database**: There we using the Firebase database.
+- **Hosting**: This website is hosted on Vercel.
+- **Database**: We use Cloud Firestore for secure, encrypted document storage.
 
-#### Light Mode
-
-![](public/Light-mode.gif)
-
-#### Dark Mode
-
-![](public/Dark-mode.gif)
+---
 
 ## Getting Started
 
@@ -58,55 +115,7 @@ NotesLocker is a lightweight, secure, and open-source notepad application built 
    npm run dev # or yarn dev
    ```
 
-## Components
-
-### `App.jsx`
-
-Defines the routes for the application, including:
-
-- `/`: Home page (Home)
-- `/register`: Registration page (Register)
-- `/:username`: Login page (Login)
-- `/:username/notes`: Notes page (protected route) (Notes)
-
-### `Home.jsx`
-
-The home page component allows users to enter a username and get started. It also highlights application features and FAQs.
-
-### `Register.jsx`
-
-The registration page component lets users set a password for their username. It validates the password and stores the user data in Firebase Firestore.
-
-### `Login.jsx`
-
-The login page component enables users to enter their password to access their notes. It fetches user data from Firebase Firestore and validates the password.
-
-### `Notes.jsx`
-
-The notes page component allows users to create, update, and delete notes. It includes features like:
-
-- Auto-save
-- Dark mode
-- Password change functionality
-
-### `ConfirmPassword.jsx`
-
-A modal component for changing passwords. It validates the new password and updates it in Firebase Firestore.
-
-### `ToastNotification.jsx`
-
-A utility component for toast notifications (success, error, info, and warning) using `react-toastify`.
-
-### `Collapsable.jsx`
-
-A reusable component for collapsible sections, used for displaying FAQs on the home page.
-
-### Utility Files
-
-- **`firebase.js`**: Initializes Firebase and exports the Firestore database instance.
-- **`fetchUser.js`**: Defines the `fetchUser` function to fetch user data from Firebase Firestore.
-- **`Note.js`**: Contains functions to create, update, and delete notes, as well as update user passwords in Firebase Firestore.
-- **`setUser.js`**: Defines the `setUser` function to register new users and store their data in Firebase Firestore.
+---
 
 ## Contributing
 

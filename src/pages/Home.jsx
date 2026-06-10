@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { 
   LuLock, LuGlobe, LuShield, LuTerminal, LuSun, LuMoon, 
   LuClock, LuChevronRight, LuFileText, LuMenu, LuX, LuArrowRight, LuSparkles,
-  LuGithub
+  LuGithub, LuKey, LuCheck
 } from "react-icons/lu";
 import Collapsible from "../components/Collapsable";
 import { fetchUser } from "../utils/fetchUser";
@@ -55,6 +55,57 @@ const features = [
   },
 ];
 
+const securitySteps = [
+  {
+    title: "Key Derivation (PBKDF2)",
+    subtitle: "HMAC-SHA-256 (100k rounds)",
+    icon: <LuKey className="w-5 h-5" />,
+    description: "Your raw password is never transmitted. Instead, your browser derives a 256-bit key using PBKDF2 with 100,000 iterations of SHA-256 and a random salt.",
+    highlights: [
+      "Raw credentials never leave your local machine.",
+      "100,000 rounds protect against brute-force attacks.",
+      "Cryptographic salt prevents rainbow table decryption."
+    ],
+    flowchart: "Password + Salt ──► [PBKDF2 (100k rounds)] ──► Derived Key (Client-Only)"
+  },
+  {
+    title: "Master Key Decryption",
+    subtitle: "Two-Tier Cryptographic Lock",
+    icon: <LuLock className="w-5 h-5" />,
+    description: "Your notes are locked by a random, unique Master Key. This Master Key is encrypted using your derived password key. This allows password changes without re-encrypting all notes.",
+    highlights: [
+      "Master Key is generated cryptographically using standard secure random values.",
+      "Password changes only re-encrypt the Master Key, not the whole vault.",
+      "Compromising database stores only encrypted keys, not the keys to decode notes."
+    ],
+    flowchart: "Master Key ──► [AES-GCM (Password Key)] ──► Encrypted Master Key (Firestore)"
+  },
+  {
+    title: "Symmetric Encryption (AES)",
+    subtitle: "256-bit Authenticated Vault",
+    icon: <LuShield className="w-5 h-5" />,
+    description: "All notes are encrypted inside the browser using AES-GCM 256-bit encryption. A fresh, random Initialization Vector (IV) is generated for every sync.",
+    highlights: [
+      "AES-GCM is industry standard, providing authenticated encryption.",
+      "Random IV guarantees identical text encrypts to unique ciphertext.",
+      "Decryption happens strictly inside local browser memory."
+    ],
+    flowchart: "Plaintext Notes ──► [AES-GCM (Master Key)] ──► Ciphertext Notes (Firestore)"
+  },
+  {
+    title: "Zero-Knowledge Proof",
+    subtitle: "Cryptographic Validator Check",
+    icon: <LuSparkles className="w-5 h-5" />,
+    description: "During locker creation, the browser encrypts a specific validation token ('locker_unlocked'). When logging in, we attempt to decrypt it to verify your key.",
+    highlights: [
+      "No password hashes or plaintext equivalents are saved.",
+      "Zero server state required to check auth success.",
+      "Validation is a client-side mathematical decryption proof."
+    ],
+    flowchart: "Locker Validator ──► [AES-GCM (Password Key)] ──► Validator Ciphertext"
+  }
+];
+
 const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
@@ -63,6 +114,7 @@ const Home = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileMenuAnimate, setIsMobileMenuAnimate] = useState(false);
+  const [activeSecurityStep, setActiveSecurityStep] = useState(0);
   const inputRef = useRef(null);
 
   const handleFocusInput = () => {
@@ -169,6 +221,7 @@ const Home = () => {
             
             <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-900 dark:text-gray-300">
               <a href="#about" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">Features</a>
+              <a href="#security" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">Security</a>
               <a href="#projects" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">Quickstart</a>
               <a href="#faqs" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">FAQs</a>
             </div>
@@ -261,6 +314,13 @@ const Home = () => {
                 className="text-3xl font-semibold text-gray-900 dark:text-white hover:text-[#ff5f03] transition-colors"
               >
                 Features
+              </a>
+              <a 
+                href="#security" 
+                onClick={closeMobileMenu}
+                className="text-3xl font-semibold text-gray-900 dark:text-white hover:text-[#ff5f03] transition-colors"
+              >
+                Security
               </a>
               <a 
                 href="#projects" 
@@ -461,14 +521,111 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SECTION 3: QUICKSTART / STEPS (Light gray background) */}
-      <section id="projects" className="bg-[#F5F5F5] dark:bg-slate-900 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 transition-colors duration-500">
+      {/* SECTION 2.5: CRYPTOGRAPHY/SECURITY */}
+      <section id="security" className="bg-[#F5F5F5] dark:bg-slate-900/40 pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-32 overflow-hidden relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+          
+          {/* Badge row */}
+          <div className="flex items-center gap-3 mb-6 sm:mb-8">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">
+              2
+            </div>
+            <span className="border border-gray-200 dark:border-slate-800 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium text-gray-900 dark:text-gray-300">
+              Zero-Knowledge Protocol
+            </span>
+          </div>
+
+          <h2 className="text-[clamp(1.5rem,4.2vw,3.2rem)] font-medium leading-[1.12] tracking-[-0.02em] text-gray-900 dark:text-white mb-12 sm:mb-16 lg:mb-24 max-w-4xl">
+            How End-to-End Encryption <br className="hidden sm:block" />
+            protects your data in NotesLocker.
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] items-start gap-8">
+            
+            {/* Left Col: Step Toggles */}
+            <div className="flex flex-col gap-3">
+              {securitySteps.map((step, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveSecurityStep(idx)}
+                  className={`p-5 rounded-2xl border text-left transition-all duration-300 flex items-center gap-4 ${
+                    activeSecurityStep === idx
+                      ? "bg-white dark:bg-slate-950 border-[#ff5f03] dark:border-[#ff5f03] shadow-md shadow-[#ff5f03]/5"
+                      : "bg-transparent border-slate-200/60 dark:border-slate-800/50 hover:bg-white/40 dark:hover:bg-slate-800/20 text-slate-500 dark:text-slate-400"
+                  }`}
+                >
+                  <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                    activeSecurityStep === idx
+                      ? "bg-[#ff5f03]/10 text-[#ff5f03]"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                  }`}>
+                    {step.icon}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <h5 className={`font-bold text-sm leading-tight transition-colors ${
+                      activeSecurityStep === idx
+                        ? "text-slate-900 dark:text-white"
+                        : "text-slate-700 dark:text-slate-450"
+                    }`}>
+                      {step.title}
+                    </h5>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 truncate block mt-0.5 font-medium">
+                      {step.subtitle}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Right Col: Details Card */}
+            <div className="flex flex-col bg-white dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 sm:p-8 min-h-[400px] justify-between shadow-sm relative">
+              <div className="space-y-6">
+                <div>
+                  <span className="text-xs font-semibold text-[#ff5f03] bg-[#ff5f03]/8 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    {securitySteps[activeSecurityStep].subtitle}
+                  </span>
+                  <h4 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-3 leading-tight font-display">
+                    {securitySteps[activeSecurityStep].title}
+                  </h4>
+                </div>
+
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-450">
+                  {securitySteps[activeSecurityStep].description}
+                </p>
+
+                {/* Highlights */}
+                <div className="space-y-3 pt-2">
+                  {securitySteps[activeSecurityStep].highlights.map((highlight, idx) => (
+                    <div key={idx} className="flex items-start gap-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                      <span className="w-4 h-4 rounded-full bg-[#ff5f03]/15 text-[#ff5f03] flex items-center justify-center shrink-0 mt-0.5">
+                        <LuCheck className="w-2.5 h-2.5" />
+                      </span>
+                      <span>{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Graphical flowchart block */}
+              <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-xl font-mono text-[10px] sm:text-xs text-[#ff5f03] dark:text-[#ff8f43] overflow-x-auto whitespace-nowrap select-none shadow-inner">
+                {securitySteps[activeSecurityStep].flowchart}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* SECTION 3: QUICKSTART / STEPS (White background) */}
+      <section id="projects" className="bg-white dark:bg-slate-950 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 transition-colors duration-500">
         <div className="max-w-[1440px] mx-auto">
           
           {/* Badge row */}
           <div className="flex items-center gap-3 mb-6 sm:mb-8 px-5 sm:px-8 lg:px-12">
             <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">
-              2
+              3
             </div>
             <span className="border border-gray-300 dark:border-slate-800 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium text-gray-900 dark:text-gray-300">
               Interactive Steps
@@ -505,7 +662,7 @@ const Home = () => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   handleFocusInput();
                 }}
-                className="group cursor-pointer bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[320px] relative overflow-hidden"
+                className="group cursor-pointer bg-[#F5F5F5] dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[320px] relative overflow-hidden"
               >
                 {/* Graphics slot representing aspects */}
                 <div className={`h-36 sm:h-40 w-full rounded-xl flex items-center justify-center ${item.accent} relative overflow-hidden transition-all duration-300 group-hover:scale-[1.01]`}>
@@ -531,14 +688,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SECTION 4: FAQs */}
-      <section id="faqs" className="bg-white dark:bg-slate-950 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
+      {/* SECTION 4: FAQs (Light gray background) */}
+      <section id="faqs" className="bg-[#F5F5F5] dark:bg-slate-900 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col items-center">
           
           {/* Badge row */}
           <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
             <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">
-              3
+              4
             </div>
             <span className="border border-gray-300 dark:border-slate-800 rounded-full px-3 sm:px-4 py-1 sm:py-1.5 text-[12px] sm:text-[13px] font-medium text-gray-900 dark:text-gray-300">
               Support & Help
