@@ -376,7 +376,7 @@ const Notes = () => {
         {selectedNote ? (
           <>
             {/* Editor Header */}
-            <header className="px-6 py-4 border-b border-gray-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900 flex items-center justify-between">
+            <header className="px-4 py-4 md:px-6 md:py-4 border-b border-gray-200/50 dark:border-slate-800/40 bg-white dark:bg-slate-900 flex items-center justify-between">
               <div className="flex items-center space-x-3 min-w-0 flex-1">
                 {/* Mobile Back Button */}
                 <button
@@ -423,7 +423,7 @@ const Notes = () => {
             </header>
 
             {/* Textarea Area */}
-            <div className="flex-1 p-6 relative">
+            <div className="flex-1 pl-4 pr-0.5 pt-4 pb-4 md:p-6 relative">
               <textarea
                 value={selectedNote.text}
                 onChange={handleNoteTextChange}

@@ -59,7 +59,7 @@ const Home = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [londonTime, setLondonTime] = useState("");
+  const [indiaTime, setIndiaTime] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileMenuAnimate, setIsMobileMenuAnimate] = useState(false);
@@ -96,20 +96,20 @@ const Home = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // London Clock updater
+  // India Clock updater
   useEffect(() => {
-    const updateLondonTime = () => {
+    const updateIndiaTime = () => {
       const now = new Date();
       const options = {
-        timeZone: "Europe/London",
+        timeZone: "Asia/Kolkata",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
       };
-      setLondonTime(now.toLocaleTimeString("en-GB", options));
+      setIndiaTime(now.toLocaleTimeString("en-IN", options));
     };
-    updateLondonTime();
-    const interval = setInterval(updateLondonTime, 1000);
+    updateIndiaTime();
+    const interval = setInterval(updateIndiaTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -181,10 +181,10 @@ const Home = () => {
               Securing thoughts & secrets in 2026
             </span>
 
-            {/* London Time Clock */}
+            {/* India Time Clock */}
             <div className="hidden md:flex items-center space-x-1 text-[13px] text-gray-500 dark:text-gray-400 font-medium">
               <LuClock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
-              <span>{londonTime} in London</span>
+              <span>{indiaTime} in India</span>
             </div>
 
             {/* Theme Toggle inside navbar */}
@@ -244,7 +244,7 @@ const Home = () => {
             <div className="flex justify-between items-center mb-6">
               <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-full">
                 <LuClock className="w-3.5 h-3.5 text-gray-400" />
-                <span>{londonTime} in London</span>
+                <span>{indiaTime} in India</span>
               </span>
               <button 
                 onClick={closeMobileMenu}
@@ -278,24 +278,24 @@ const Home = () => {
               </a>
             </div>
 
-            <button
-              onClick={() => {
-                closeMobileMenu();
-                handleFocusInput();
-              }}
-              className="group w-full flex items-center justify-center gap-2 bg-[#ff5f03] hover:bg-[#e04f02] text-white py-3.5 rounded-xl transition-all duration-300 active:scale-[0.98]"
+            <a
+              href="https://github.com/senapati484/NotesLocker"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMobileMenu}
+              className="group w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-950 text-white py-3.5 rounded-xl transition-all duration-300 active:scale-[0.98] shadow-md"
             >
-              <span className="text-sm font-semibold whitespace-nowrap">Claim Locker</span>
-              <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                <LuChevronRight className="w-4 h-4 text-white" />
+              <span className="text-sm font-semibold whitespace-nowrap">GitHub Repository</span>
+              <div className="w-6 h-6 bg-white/20 dark:bg-slate-950/10 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-110 shrink-0">
+                <LuGithub className="w-3.5 h-3.5 text-white dark:text-slate-950" />
               </div>
-            </button>
+            </a>
           </div>
         </div>
       )}
 
       {/* SECTION 1: HERO (Full viewport height) */}
-      <section className="min-h-screen flex flex-col justify-between relative overflow-hidden px-5 sm:px-8 lg:px-12 pt-28 pb-14 sm:pb-16 lg:pb-20">
+      <section className="min-h-screen flex flex-col relative overflow-hidden px-5 sm:px-8 lg:px-12 pt-28 pb-14 sm:pb-16 lg:pb-20">
         
         {/* Full screen animated shader overlay */}
         <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden bg-[#EFEFEF] dark:bg-[#07070a]">
@@ -314,8 +314,11 @@ const Home = () => {
           <div className="absolute inset-0 film-grain opacity-85"></div>
         </div>
 
-        {/* Top spacer to push content to bottom */}
-        <div className="flex-1"></div>
+        {/* Top spacer for 2:1 vertical spacing ratio on mobile/tablet */}
+        <div className="grow-[2] md:hidden"></div>
+
+        {/* Top spacer to push content to bottom on desktop */}
+        <div className="grow hidden md:block"></div>
 
         {/* Hero Headline content (z-20) */}
         <div className="w-full max-w-[1440px] mx-auto z-20 relative text-left">
@@ -386,6 +389,9 @@ const Home = () => {
             */}
           </div>
         </div>
+
+        {/* Bottom spacer for 2:1 vertical spacing ratio on mobile/tablet */}
+        <div className="grow md:hidden"></div>
       </section>
 
       {/* SECTION 2: FEATURES (White background) */}
