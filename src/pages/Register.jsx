@@ -121,11 +121,11 @@ const Register = ({ onLogin }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-550 dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
               Create Password
             </label>
-            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-850 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
-              <span className="pl-4 text-slate-450 dark:text-slate-500 shrink-0">
+            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
+              <span className="pl-4 text-slate-400 dark:text-slate-500 shrink-0">
                 <LuLock className="w-4 h-4" />
               </span>
               <input
@@ -139,11 +139,11 @@ const Register = ({ onLogin }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-555 dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
               Confirm Password
             </label>
-            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-850 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
-              <span className="pl-4 text-slate-450 dark:text-slate-500 shrink-0">
+            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
+              <span className="pl-4 text-slate-400 dark:text-slate-500 shrink-0">
                 <LuLock className="w-4 h-4" />
               </span>
               <input

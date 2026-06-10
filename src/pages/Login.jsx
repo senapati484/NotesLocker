@@ -119,11 +119,11 @@ const Login = ({ onLogin }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-550 dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
               Password
             </label>
-            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-850 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
-              <span className="pl-4 text-slate-450 dark:text-slate-500 shrink-0">
+            <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
+              <span className="pl-4 text-slate-400 dark:text-slate-500 shrink-0">
                 <LuLock className="w-4 h-4" />
               </span>
               <input
@@ -141,7 +141,7 @@ const Login = ({ onLogin }) => {
           <button
             onClick={handleLogin}
             disabled={isSubmitting}
-            className="group w-full flex items-center justify-between gap-2 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-955 text-white pl-6 pr-2 py-2.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] active:scale-[0.98] shadow-md shadow-gray-900/10 hover:shadow-gray-900/20"
+            className="group w-full flex items-center justify-between gap-2 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-950 text-white pl-6 pr-2 py-2.5 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] active:scale-[0.98] shadow-md shadow-gray-900/10 hover:shadow-gray-900/20"
           >
             <div className="h-[20px] overflow-hidden relative">
               <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-1/2">

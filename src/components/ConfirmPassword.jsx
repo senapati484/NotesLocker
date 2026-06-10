@@ -75,7 +75,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
         </button>
 
         <div className="flex flex-col items-center mb-6 mt-2">
-          <div className="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-2xl mb-3 text-indigo-650 dark:text-indigo-400">
+          <div className="p-3 bg-[#ff5f03]/10 dark:bg-[#ff5f03]/10 rounded-2xl mb-3 text-[#ff5f03] dark:text-[#ff5f03]">
             <LuShieldCheck className="w-7 h-7" />
           </div>
           <h2 className="text-xl font-bold font-display text-slate-800 dark:text-white">
@@ -100,7 +100,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-full focus:outline-none focus:ring-2 focus:ring-[#ff5f03]/20 focus:border-[#ff5f03] text-sm transition-all"
               />
             </div>
           </div>
@@ -118,7 +118,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 rounded-full focus:outline-none focus:ring-2 focus:ring-[#ff5f03]/20 focus:border-[#ff5f03] text-sm transition-all"
               />
             </div>
           </div>
@@ -126,7 +126,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
           <button
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="w-full py-3 bg-indigo-650 hover:bg-indigo-500 active:scale-[0.98] text-white text-sm font-medium rounded-xl shadow-lg shadow-indigo-650/15 hover:shadow-indigo-655/25 transition-all duration-200 disabled:opacity-50 mt-4"
+            className="w-full py-3 bg-[#ff5f03] hover:bg-[#e04f02] active:scale-[0.98] text-white text-sm font-semibold rounded-full shadow-lg shadow-[#ff5f03]/15 hover:shadow-[#ff5f03]/25 transition-all duration-200 disabled:opacity-50 mt-4"
           >
             {isSubmitting ? "Updating Password..." : "Update Password"}
           </button>

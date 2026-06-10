@@ -38,17 +38,17 @@ const features = [
     description: "Passwords are encrypted via SHA-256 before leaving your browser, keeping your keys private.",
   },
   {
-    icon: <LuShield className="w-5 h-5 text-emerald-555 dark:text-emerald-400" />,
+    icon: <LuShield className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />,
     title: "Absolute Anonymity",
     description: "No email verification, sign-up forms, or tracking cookies. Just enter a name and start writing.",
   },
   {
-    icon: <LuGlobe className="w-5 h-5 text-sky-555 dark:text-sky-400" />,
+    icon: <LuGlobe className="w-5 h-5 text-sky-500 dark:text-sky-400" />,
     title: "Zero Data-Loss Sync",
     description: "Every character auto-saves to the cloud with smart conflict resolution when switching notes.",
   },
   {
-    icon: <LuTerminal className="w-5 h-5 text-amber-555 dark:text-amber-400" />,
+    icon: <LuTerminal className="w-5 h-5 text-amber-500 dark:text-amber-400" />,
     title: "Open Source Code",
     description: "Full repository transparency. Inspect, audit, or deploy your own server from GitHub.",
   },
@@ -161,12 +161,12 @@ const Home = () => {
           <div className="flex items-center space-x-6 pl-2 py-1">
             <div 
               onClick={() => navigate("/")}
-              className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-900 dark:bg-white rounded-full flex items-center justify-center hover:scale-[1.05] active:scale-[0.95] transition-all cursor-pointer shrink-0"
             >
               <span className="text-[10px] sm:text-[11px] font-bold text-white dark:text-gray-950 tracking-tight">NL</span>
             </div>
             
-            <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-900 dark:text-gray-250">
+            <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-900 dark:text-gray-300">
               <a href="#about" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">Features</a>
               <a href="#projects" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">Quickstart</a>
               <a href="#faqs" className="hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300">FAQs</a>
@@ -182,14 +182,14 @@ const Home = () => {
 
             {/* London Time Clock */}
             <div className="hidden md:flex items-center space-x-1 text-[13px] text-gray-500 dark:text-gray-400 font-medium">
-              <LuClock className="w-3.5 h-3.5 text-gray-450 dark:text-gray-500 shrink-0" />
+              <LuClock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 shrink-0" />
               <span>{londonTime} in London</span>
             </div>
 
             {/* Theme Toggle inside navbar */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-full hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               aria-label="Toggle Theme"
             >
               {darkMode ? <LuSun className="w-4 h-4 text-amber-500" /> : <LuMoon className="w-4 h-4" />}
@@ -206,7 +206,7 @@ const Home = () => {
                   <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">Claim Locker</span>
                 </div>
               </div>
-              <div className="w-6 h-6 bg-white/20 dark:bg-slate-955/10 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
+              <div className="w-6 h-6 bg-white/20 dark:bg-slate-950/10 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
                 <LuArrowRight className="w-3.5 h-3.5 text-white dark:text-slate-950" />
               </div>
             </button>
@@ -239,8 +239,8 @@ const Home = () => {
             isMobileMenuAnimate ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
           }`}>
             <div className="flex justify-between items-center mb-6">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-305 rounded-full">
-                <LuClock className="w-3.5 h-3.5 text-gray-450" />
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 rounded-full">
+                <LuClock className="w-3.5 h-3.5 text-gray-400" />
                 <span>{londonTime} in London</span>
               </span>
               <button 
@@ -495,7 +495,7 @@ const Home = () => {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                   handleFocusInput();
                 }}
-                className="group cursor-pointer bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-850 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[320px] relative overflow-hidden"
+                className="group cursor-pointer bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[320px] relative overflow-hidden"
               >
                 {/* Graphics slot representing aspects */}
                 <div className={`aspect-[4/3] w-full rounded-xl flex items-center justify-center ${item.accent} relative overflow-hidden transition-all duration-300 group-hover:scale-[1.01]`}>
@@ -522,7 +522,7 @@ const Home = () => {
       </section>
 
       {/* SECTION 4: FAQs */}
-      <section id="faqs" className="bg-white dark:bg-slate-955 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
+      <section id="faqs" className="bg-white dark:bg-slate-950 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col items-center">
           
           {/* Badge row */}
