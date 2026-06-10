@@ -33,6 +33,7 @@ const Notes = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [savingStatus, setSavingStatus] = useState("idle"); // 'idle' | 'unsaved' | 'saving' | 'saved' | 'error'
   const [isConfirmVisible, setConfirmVisible] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   // Track dark mode
   const [darkMode, setDarkMode] = useState(() => {
@@ -159,11 +160,15 @@ const Notes = () => {
   };
 
   // Delete Note Handler
-  const handleNoteDeleteClick = async () => {
+  const handleNoteDeleteClick = () => {
+    if (selectedNote) {
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const confirmDeleteHandler = async () => {
     if (!selectedNote) return;
-    
-    const confirmDelete = window.confirm(`Are you sure you want to delete "${selectedNote.name}"?`);
-    if (!confirmDelete) return;
+    setIsDeleteModalOpen(false);
 
     try {
       setSavingStatus("saving");
@@ -173,9 +178,11 @@ const Notes = () => {
       setNotes(filteredNotes);
       setSelectedNote(filteredNotes.length ? filteredNotes[0] : null);
       setSavingStatus("idle");
+      ToastNotification.success("Note deleted successfully.");
     } catch (error) {
       console.error("Failed to delete note:", error);
       setSavingStatus("error");
+      ToastNotification.error("Failed to delete note.");
     }
   };
 
@@ -442,6 +449,46 @@ const Notes = () => {
         onClose={handleClose}
         onConfirm={handleClose}
       />
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {isDeleteModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md px-4 transition-all duration-300"
+          onClick={() => setIsDeleteModalOpen(false)}
+        >
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 w-full max-w-sm relative transition-all duration-300 transform scale-100 flex flex-col items-center text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 bg-rose-500/10 text-rose-500 rounded-full mb-4 shrink-0">
+              <LuTrash2 className="w-8 h-8" />
+            </div>
+            
+            <h3 className="text-lg font-bold text-slate-850 dark:text-white font-display">
+              Delete Note
+            </h3>
+            
+            <p className="text-xs sm:text-sm text-slate-450 dark:text-slate-505 mt-2 leading-relaxed">
+              Are you sure you want to delete <span className="font-semibold text-slate-705 dark:text-slate-300">&ldquo;{selectedNote?.name}&rdquo;</span>? This action cannot be undone.
+            </p>
+            
+            <div className="flex items-center gap-3 w-full mt-6">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-full transition-colors duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteHandler}
+                className="flex-1 py-2.5 bg-rose-650 hover:bg-rose-600 text-white text-xs font-semibold rounded-full shadow-md shadow-rose-650/10 transition-colors duration-300"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
