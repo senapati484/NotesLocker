@@ -1,28 +1,55 @@
-import {
-  doc,
-  updateDoc,
-  getDoc,
-  arrayUnion,
-  runTransaction,
-  setDoc,
-} from "firebase/firestore";
+import { doc, updateDoc, runTransaction } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "../components/ToastNotification";
+import {
+  importKeyFromHex,
+  encryptData,
+  decryptData,
+  generateRandomSalt,
+  deriveKey
+} from "./crypto";
+
+// Helper: read, decrypt, modify, encrypt, and save notes in a transaction
+const modifyAndSaveNotes = async (userName, masterKey, modifierFn) => {
+  const userRef = doc(db, "users", userName);
+  await runTransaction(db, async (transaction) => {
+    const userSnapshot = await transaction.get(userRef);
+    if (!userSnapshot.exists()) throw new Error("User not found.");
+
+    const userData = userSnapshot.data();
+    const { encryptedNotes, notesIv } = userData;
+
+    if (!encryptedNotes || !notesIv) {
+      throw new Error("Encrypted notes data is missing.");
+    }
+
+    // Decrypt notes
+    const masterCryptoKey = await importKeyFromHex(masterKey);
+    const notesPlaintext = await decryptData(encryptedNotes, notesIv, masterCryptoKey);
+    const notesArray = JSON.parse(notesPlaintext);
+
+    // Apply modifications
+    const updatedNotes = modifierFn(notesArray);
+
+    // Re-encrypt
+    const { ciphertext: newEncryptedNotes, iv: newNotesIv } = await encryptData(
+      JSON.stringify(updatedNotes),
+      masterCryptoKey
+    );
+
+    // Update
+    transaction.update(userRef, {
+      encryptedNotes: newEncryptedNotes,
+      notesIv: newNotesIv
+    });
+  });
+};
 
 // Create a new note
 export const createNote = async (user, noteName) => {
   try {
-    console.log(user);
-
-    if (!user || !user.name) throw new Error("User name is required.");
+    if (!user || !user.name || !user.masterKey) throw new Error("Invalid user session.");
     if (!noteName) throw new Error("Note name is required.");
-
-    const userRef = doc(db, "users", user.name);
-    const userSnapshot = await getDoc(userRef);
-
-    if (!userSnapshot.exists()) {
-      await setDoc(userRef, { notes: [] }); // Create user document with an empty notes array
-    }
 
     const newNote = {
       id: new Date().toISOString(),
@@ -32,177 +59,94 @@ export const createNote = async (user, noteName) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await updateDoc(userRef, {
-      notes: arrayUnion(newNote),
+    await modifyAndSaveNotes(user.name, user.masterKey, (notes) => {
+      return [...notes, newNote];
     });
 
     ToastNotification.success(`Note "${noteName}" created successfully!`);
     return newNote;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     ToastNotification.warning(`Failed to create note: ${error.message}`);
     throw error;
-  }
-};
-
-// Update the text of a note
-export const updateText = async (user, noteId, newText) => {
-  try {
-    if (!user) throw new Error("User name is required.");
-    if (!noteId) throw new Error("Note ID is required.");
-
-    const userRef = doc(db, "users", user); // Use user ID here
-
-    await runTransaction(db, async (transaction) => {
-      const userSnapshot = await transaction.get(userRef);
-      if (!userSnapshot.exists()) throw new Error("User not found."); // Error if user not found
-
-      const userDoc = userSnapshot.data();
-      const updatedNotes = userDoc.notes.map((note) =>
-        note.id === noteId
-          ? { ...note, text: newText, updatedAt: new Date().toISOString() }
-          : note
-      );
-
-      transaction.update(userRef, { notes: updatedNotes });
-    });
-
-    // ToastNotification.success("Note text updated successfully!");
-  } catch (error) {
-    // console.error("Error in updateText:", error.message);
-    ToastNotification.warning(`Failed to update note text: ${error.message}`);
   }
 };
 
 // Delete a note by ID
 export const deleteNote = async (user, noteId) => {
   try {
-    if (!user) throw new Error("User name is required.");
+    if (!user || !user.name || !user.masterKey) throw new Error("Invalid user session.");
     if (!noteId) throw new Error("Note ID is required.");
 
-    const userRef = doc(db, "users", user);
-    const userSnapshot = await getDoc(userRef);
-
-    if (!userSnapshot.exists()) throw new Error("User not found.");
-
-    const userDoc = userSnapshot.data();
-    const updatedNotes = userDoc.notes.filter((note) => note.id !== noteId);
-
-    await updateDoc(userRef, { notes: updatedNotes });
+    await modifyAndSaveNotes(user.name, user.masterKey, (notes) => {
+      return notes.filter((note) => note.id !== noteId);
+    });
 
     ToastNotification.success("Note deleted successfully!");
   } catch (error) {
-    // console.error("Error in deleteNote:", error.message);
+    console.error(error);
     ToastNotification.warning(`Failed to delete note: ${error.message}`);
+    throw error;
   }
 };
-
-// Update user password
-export const updatePassword = async (user, newPassword) => {
-  try {
-    if (!user) throw new Error("User name is required.");
-    if (!newPassword) throw new Error("Password is required.");
-
-    const userRef = doc(db, "users", user);
-
-    await updateDoc(userRef, { password: newPassword });
-
-    ToastNotification.success("Password updated successfully!");
-  } catch (error) {
-    console.log(error);
-    ToastNotification.warning("Failed to update password! Please try again.");
-  }
-};
-
-// Update the name of a note
-export const updateNoteName = async (userName, noteName, newName) => {
-  try {
-    if (!userName) throw new Error("User name is required.");
-    if (!noteName) throw new Error("Note name is required.");
-    if (!newName) throw new Error("New name is required.");
-
-    const userRef = doc(db, "users", userName); // Reference the user document
-
-    await runTransaction(db, async (transaction) => {
-      const userSnapshot = await transaction.get(userRef);
-
-      if (!userSnapshot.exists()) {
-        throw new Error("User not found.");
-      }
-
-      const userDoc = userSnapshot.data();
-
-      // Ensure that notes exist before attempting to map through them
-      if (!userDoc.notes || userDoc.notes.length === 0) {
-        throw new Error("No notes found for the user.");
-      }
-
-      const updatedNotes = userDoc.notes.map((note) =>
-        note.id === noteName
-          ? { ...note, name: newName, updatedAt: new Date().toISOString() }
-          : note
-      );
-
-      // Update the user document with the updated notes
-      transaction.update(userRef, { notes: updatedNotes });
-    });
-
-    // ToastNotification.success("Note name updated successfully!");
-  } catch (error) {
-    ToastNotification.warning(`Failed to update note name: ${error.message}`);
-    // console.error("Error in updateNoteName:", error);
-  }
-};
-
-// Update the name of a note
-export const updateName = async (user, noteId, newName) => {
-  try {
-    if (!user) throw new Error("User name is required.");
-    if (!noteId) throw new Error("Note ID is required.");
-
-    const userRef = doc(db, "users", user);
-    const userSnapshot = await getDoc(userRef);
-    if (!userSnapshot.exists()) throw new Error("User not found.");
-
-    const userDoc = userSnapshot.data();
-    const notes = userDoc.notes.map((note) =>
-      note.id === noteId
-        ? { ...note, name: newName, updatedAt: new Date().toISOString() }
-        : note
-    );
-
-    await updateDoc(userRef, { notes });
-
-    ToastNotification.success("Note name updated successfully!");
-  } catch (error) {
-    console.log(error);
-    ToastNotification.warning("Failed to update note name! Please try again.");
-  }
-}; //not implemented
 
 // Update note content and name in a single transaction
 export const updateNote = async (user, noteId, newText, newName) => {
   try {
-    if (!user) throw new Error("User name is required.");
+    if (!user || !user.name || !user.masterKey) throw new Error("Invalid user session.");
     if (!noteId) throw new Error("Note ID is required.");
 
-    const userRef = doc(db, "users", user);
-
-    await runTransaction(db, async (transaction) => {
-      const userSnapshot = await transaction.get(userRef);
-      if (!userSnapshot.exists()) throw new Error("User not found.");
-
-      const userDoc = userSnapshot.data();
-      const updatedNotes = userDoc.notes.map((note) =>
+    await modifyAndSaveNotes(user.name, user.masterKey, (notes) => {
+      return notes.map((note) =>
         note.id === noteId
           ? { ...note, text: newText, name: newName, updatedAt: new Date().toISOString() }
           : note
       );
-
-      transaction.update(userRef, { notes: updatedNotes });
     });
   } catch (error) {
+    console.error(error);
     ToastNotification.warning(`Failed to save note changes: ${error.message}`);
+    throw error;
+  }
+};
+
+// Update user password and re-encrypt the Master Key
+export const updatePassword = async (user, newPassword) => {
+  try {
+    if (!user || !user.name || !user.masterKey) throw new Error("Invalid user session.");
+    if (!newPassword) throw new Error("Password is required.");
+
+    const userRef = doc(db, "users", user.name);
+
+    // Derive new password-based key
+    const passwordSalt = generateRandomSalt();
+    const passwordKey = await deriveKey(newPassword, passwordSalt);
+
+    // Create new validator
+    const { ciphertext: validatorCiphertext, iv: validatorIv } = await encryptData(
+      "locker_unlocked",
+      passwordKey
+    );
+
+    // Re-encrypt Master Key
+    const { ciphertext: encryptedMasterKeyUser, iv: masterKeyUserIv } = await encryptData(
+      user.masterKey,
+      passwordKey
+    );
+
+    // Update Firestore
+    await updateDoc(userRef, {
+      passwordSalt,
+      validatorCiphertext,
+      validatorIv,
+      encryptedMasterKeyUser,
+      masterKeyUserIv,
+    });
+
+    ToastNotification.success("Password updated successfully!");
+  } catch (error) {
+    console.error(error);
+    ToastNotification.warning("Failed to update password! Please try again.");
     throw error;
   }
 };

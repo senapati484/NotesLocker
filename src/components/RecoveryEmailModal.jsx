@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "./ToastNotification";
-import { hashPassword } from "../utils/crypto";
+import { generateRandomKey, encryptData, importKeyFromHex } from "../utils/crypto";
 import { LuMail, LuShieldCheck, LuX, LuLock } from "react-icons/lu";
 
 const RecoveryEmailModal = ({ isVisible, onClose, currentUser }) => {
@@ -84,45 +84,50 @@ const RecoveryEmailModal = ({ isVisible, onClose, currentUser }) => {
 
     try {
       setIsSubmitting(true);
+      
+      if (!currentUser || !currentUser.masterKey) {
+        ToastNotification.error("Invalid user session. Please log in again.");
+        return;
+      }
+
+      // 1. Generate a random Recovery Key
+      const recoveryKey = generateRandomKey();
+
+      // 2. Encrypt the Master Key with the Recovery Key
+      const recoveryCryptoKey = await importKeyFromHex(recoveryKey);
+      const { ciphertext: encryptedMasterKeyRecovery, iv: masterKeyRecoveryIv } = await encryptData(
+        currentUser.masterKey,
+        recoveryCryptoKey
+      );
+
+      // 3. Store the E2EE recovery key ciphertext in Firestore first
       const userRef = doc(db, "users", currentUser.name);
-      const userSnapshot = await getDoc(userRef);
-
-      if (!userSnapshot.exists()) {
-        ToastNotification.error("User session invalid.");
-        return;
-      }
-
-      const userData = userSnapshot.data();
-      const tempRecovery = userData.tempRecovery;
-
-      if (!tempRecovery) {
-        ToastNotification.error("No pending OTP found. Please request a new code.");
-        return;
-      }
-
-      const enteredHash = await hashPassword(cleanOtp);
-      const now = new Date().toISOString();
-
-      if (now > tempRecovery.expiresAt) {
-        ToastNotification.error("Verification code has expired. Please send a new one.");
-        return;
-      }
-
-      if (enteredHash !== tempRecovery.otpHash) {
-        ToastNotification.error("Invalid verification code. Please try again.");
-        return;
-      }
-
-      // Successful verification -> Update recoveryEmail in database
       await updateDoc(userRef, {
-        recoveryEmail: tempRecovery.email,
-        tempRecovery: null,
+        encryptedMasterKeyRecovery,
+        masterKeyRecoveryIv,
       });
 
-      setVerifiedEmail(tempRecovery.email);
-      setIsOtpSent(false);
-      setOtp("");
-      ToastNotification.success("Recovery email configured successfully!");
+      // 4. Call serverless verify-otp endpoint to encrypt the recovery key and verify OTP
+      const response = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: currentUser.name,
+          otp: cleanOtp,
+          isSetup: true,
+          recoveryKey: recoveryKey,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        setVerifiedEmail(result.email);
+        setIsOtpSent(false);
+        setOtp("");
+        ToastNotification.success("Recovery email configured successfully!");
+      } else {
+        ToastNotification.error(result.error || "Verification failed.");
+      }
     } catch (error) {
       console.error(error);
       ToastNotification.error("Verification failed. Please try again.");

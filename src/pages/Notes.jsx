@@ -67,10 +67,10 @@ const Notes = () => {
 
   // Direct save function
   const saveNoteDirect = useCallback(async (noteToSave) => {
-    if (!noteToSave || !currentUser?.id) return;
+    if (!noteToSave || !currentUser) return;
     try {
       setSavingStatus("saving");
-      await updateNote(currentUser.id, noteToSave.id, noteToSave.text, noteToSave.name);
+      await updateNote(currentUser, noteToSave.id, noteToSave.text, noteToSave.name);
       
       // Update local notes timestamp / info
       setNotes((prevNotes) =>
@@ -81,7 +81,7 @@ const Notes = () => {
       console.error("Auto-save failed:", error);
       setSavingStatus("error");
     }
-  }, [currentUser?.id]);
+  }, [currentUser]);
 
   // Debounced auto-save effect
   useEffect(() => {
@@ -174,7 +174,7 @@ const Notes = () => {
 
     try {
       setSavingStatus("saving");
-      await deleteNote(currentUser.name, selectedNote.id);
+      await deleteNote(currentUser, selectedNote.id);
       
       const filteredNotes = notes.filter((n) => n.id !== selectedNote.id);
       setNotes(filteredNotes);

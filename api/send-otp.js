@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { initializeFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -17,7 +17,7 @@ function getDb() {
       appId: process.env.VITE_APP_ID,
       measurementId: process.env.VITE_MEASURENENT_ID,
     };
-    app = initializeApp(firebaseConfig);
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     db = initializeFirestore(app, {
       experimentalForceLongPolling: true,
     });

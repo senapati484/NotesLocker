@@ -3,7 +3,17 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import ToastNotification from "../components/ToastNotification";
 import { fetchUser } from "../utils/fetchUser";
-import { hashPassword } from "../utils/crypto";
+import { 
+  hashPassword,
+  generateRandomSalt,
+  generateRandomKey,
+  deriveKey,
+  importKeyFromHex,
+  encryptData,
+  decryptData
+} from "../utils/crypto";
+import { db } from "../hooks/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { LuLock, LuArrowRight } from "react-icons/lu";
 import ForgotPasswordModal from "../components/ForgotPasswordModal";
 
@@ -55,15 +65,122 @@ const Login = ({ onLogin }) => {
 
     if (userData && userData.length > 0) {
       setIsSubmitting(true);
-      const realPassword = userData[0].password;
-      const enteredHash = await hashPassword(password);
+      let isPasswordCorrect = false;
+      let decryptedNotes = [];
+      let masterKey = "";
+      const oldPassword = userData[0].password;
 
-      // Support both plaintext fallback (for old users) and secure hashing (for new users)
-      if (enteredHash === realPassword || password === realPassword) {
+      try {
+        if (oldPassword) {
+          // 1. Old account migration flow
+          const enteredHash = await hashPassword(password);
+          if (enteredHash === oldPassword || password === oldPassword) {
+            isPasswordCorrect = true;
+            const plainNotes = userData[0].notes || [];
+            
+            // Generate E2EE credentials for upgrade
+            const passwordSalt = generateRandomSalt();
+            const passwordKey = await deriveKey(password, passwordSalt);
+            
+            const { ciphertext: validatorCiphertext, iv: validatorIv } = await encryptData(
+              "locker_unlocked",
+              passwordKey
+            );
+            
+            masterKey = generateRandomKey();
+            const { ciphertext: encryptedMasterKeyUser, iv: masterKeyUserIv } = await encryptData(
+              masterKey,
+              passwordKey
+            );
+            
+            const masterCryptoKey = await importKeyFromHex(masterKey);
+            const { ciphertext: encryptedNotes, iv: notesIv } = await encryptData(
+              JSON.stringify(plainNotes),
+              masterCryptoKey
+            );
+            
+            // Save migrated E2EE document (overwriting old fields)
+            const userRef = doc(db, "users", username);
+            const migratedDoc = {
+              name: username,
+              passwordSalt,
+              validatorCiphertext,
+              validatorIv,
+              encryptedMasterKeyUser,
+              masterKeyUserIv,
+              encryptedNotes,
+              notesIv,
+              createdAt: userData[0].createdAt || new Date().toISOString(),
+            };
+            if (userData[0].recoveryEmail) {
+              migratedDoc.recoveryEmail = userData[0].recoveryEmail;
+            }
+            if (userData[0].serverRecoveryKey) {
+              migratedDoc.serverRecoveryKey = userData[0].serverRecoveryKey;
+            }
+            
+            await setDoc(userRef, migratedDoc);
+            decryptedNotes = plainNotes;
+            ToastNotification.success("Locker security successfully upgraded!");
+          }
+        } else {
+          // 2. E2EE verification flow
+          const {
+            passwordSalt,
+            validatorCiphertext,
+            validatorIv,
+            encryptedMasterKeyUser,
+            masterKeyUserIv,
+            encryptedNotes,
+            notesIv,
+          } = userData[0];
+
+          if (!passwordSalt || !validatorCiphertext || !validatorIv) {
+            throw new Error("Locker data corrupted or invalid.");
+          }
+
+          const passwordKey = await deriveKey(password, passwordSalt);
+          
+          // Try to decrypt validator
+          const decryptedValidator = await decryptData(validatorCiphertext, validatorIv, passwordKey);
+          
+          if (decryptedValidator === "locker_unlocked") {
+            isPasswordCorrect = true;
+            
+            // Decrypt Master Key
+            const decryptedMasterKey = await decryptData(
+              encryptedMasterKeyUser,
+              masterKeyUserIv,
+              passwordKey
+            );
+            masterKey = decryptedMasterKey;
+            
+            // Decrypt notes
+            const masterCryptoKey = await importKeyFromHex(masterKey);
+            const notesPlaintext = await decryptData(encryptedNotes, notesIv, masterCryptoKey);
+            decryptedNotes = JSON.parse(notesPlaintext);
+          }
+        }
+      } catch (err) {
+        console.error("Authentication/Decryption failed:", err);
+        isPasswordCorrect = false;
+      }
+
+      if (isPasswordCorrect) {
         ToastNotification.success("Access granted!");
         onLogin(username);
+        
+        // Assemble decrypted session state
+        const sessionUserData = [{
+          id: username || userData[0].name,
+          name: username || userData[0].name,
+          notes: decryptedNotes,
+          masterKey: masterKey,
+          recoveryEmail: userData[0].recoveryEmail || null,
+        }];
+
         navigate(`/${username || userData[0].name}/notes`, {
-          state: { userData: userData },
+          state: { userData: sessionUserData },
         });
       } else {
         ToastNotification.warning("Invalid password. Please try again!");

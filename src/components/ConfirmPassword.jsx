@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import ToastNotification from "./ToastNotification";
 import { useLocation } from "react-router-dom";
 import { updatePassword } from "../utils/Note";
-import { hashPassword } from "../utils/crypto";
 import { LuLock, LuShieldCheck, LuX } from "react-icons/lu";
 
 const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
@@ -46,8 +45,7 @@ const ConfirmPassword = ({ isVisible, onClose, onConfirm }) => {
 
     try {
       setIsSubmitting(true);
-      const hashedPassword = await hashPassword(password);
-      await updatePassword(userData[0].name, hashedPassword);
+      await updatePassword(userData[0], password);
       onConfirm(password);
       onClose();
     } catch (error) {

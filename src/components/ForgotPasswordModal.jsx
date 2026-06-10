@@ -3,7 +3,13 @@ import PropTypes from "prop-types";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../hooks/firebase";
 import ToastNotification from "./ToastNotification";
-import { hashPassword } from "../utils/crypto";
+import { 
+  generateRandomSalt, 
+  deriveKey, 
+  importKeyFromHex, 
+  encryptData, 
+  decryptData 
+} from "../utils/crypto";
 import { LuShieldAlert, LuLock, LuX, LuMail } from "react-icons/lu";
 
 const ForgotPasswordModal = ({ isVisible, onClose, username }) => {
@@ -13,6 +19,7 @@ const ForgotPasswordModal = ({ isVisible, onClose, username }) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recoveryKey, setRecoveryKey] = useState("");
 
   // Mask Email Helper
   const maskEmail = (email) => {
@@ -94,35 +101,26 @@ const ForgotPasswordModal = ({ isVisible, onClose, username }) => {
 
     try {
       setIsSubmitting(true);
-      const userRef = doc(db, "users", username);
-      const userSnapshot = await getDoc(userRef);
+      
+      // Call serverless endpoint to verify OTP and retrieve the recovery key
+      const response = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          otp: cleanOtp,
+          isSetup: false,
+        }),
+      });
 
-      if (!userSnapshot.exists()) return;
-
-      const userData = userSnapshot.data();
-      const tempRecovery = userData.tempRecovery;
-
-      if (!tempRecovery) {
-        ToastNotification.error("No active OTP found. Please send a new code.");
-        return;
+      const result = await response.json();
+      if (response.ok) {
+        setRecoveryKey(result.recoveryKey);
+        setStep("reset");
+        ToastNotification.success("OTP verified! Set your new password.");
+      } else {
+        ToastNotification.error(result.error || "Verification failed.");
       }
-
-      const enteredHash = await hashPassword(cleanOtp);
-      const now = new Date().toISOString();
-
-      if (now > tempRecovery.expiresAt) {
-        ToastNotification.error("Verification code has expired. Please send a new one.");
-        return;
-      }
-
-      if (enteredHash !== tempRecovery.otpHash) {
-        ToastNotification.error("Invalid verification code. Please try again.");
-        return;
-      }
-
-      // Successful verification -> Move to password reset
-      setStep("reset");
-      ToastNotification.success("OTP verified! Set your new password.");
     } catch (error) {
       console.error(error);
       ToastNotification.error("Verification failed.");
@@ -159,16 +157,64 @@ const ForgotPasswordModal = ({ isVisible, onClose, username }) => {
       return;
     }
 
+    if (!recoveryKey) {
+      ToastNotification.error("Recovery session expired. Please verify OTP again.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      const hashedPassword = await hashPassword(newPassword);
       const userRef = doc(db, "users", username);
+      const userSnapshot = await getDoc(userRef);
 
+      if (!userSnapshot.exists()) {
+        ToastNotification.error("User not found.");
+        return;
+      }
+
+      const userData = userSnapshot.data();
+      const { encryptedMasterKeyRecovery, masterKeyRecoveryIv } = userData;
+
+      if (!encryptedMasterKeyRecovery || !masterKeyRecoveryIv) {
+        ToastNotification.error("Recovery credentials missing on this locker.");
+        return;
+      }
+
+      // 1. Decrypt Master Key using the Recovery Key
+      const recoveryCryptoKey = await importKeyFromHex(recoveryKey);
+      const decryptedMasterKey = await decryptData(
+        encryptedMasterKeyRecovery,
+        masterKeyRecoveryIv,
+        recoveryCryptoKey
+      );
+
+      // 2. Derive new password-based key
+      const passwordSalt = generateRandomSalt();
+      const passwordKey = await deriveKey(newPassword, passwordSalt);
+
+      // 3. Create new validator
+      const { ciphertext: validatorCiphertext, iv: validatorIv } = await encryptData(
+        "locker_unlocked",
+        passwordKey
+      );
+
+      // 4. Re-encrypt Master Key with the new password key
+      const { ciphertext: encryptedMasterKeyUser, iv: masterKeyUserIv } = await encryptData(
+        decryptedMasterKey,
+        passwordKey
+      );
+
+      // 5. Save new password credentials and clear recovery key in memory
       await updateDoc(userRef, {
-        password: hashedPassword,
-        tempRecovery: null, // Clear OTP details
+        passwordSalt,
+        validatorCiphertext,
+        validatorIv,
+        encryptedMasterKeyUser,
+        masterKeyUserIv,
+        tempRecovery: null, // Ensure OTP is cleared
       });
 
+      setRecoveryKey("");
       ToastNotification.success("Password reset successful! You can now log in.");
       onClose();
     } catch (error) {

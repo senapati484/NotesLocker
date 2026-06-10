@@ -68,11 +68,14 @@ const Register = ({ onLogin }) => {
 
     try {
       setIsSubmitting(true);
-      await setUser(user, password);
-      if (onLogin) {
-        onLogin(user);
-      } else {
-        navigate(`/${user}/notes`);
+      const result = await setUser(user, password);
+      if (result && result.success) {
+        if (onLogin) {
+          onLogin(user);
+        }
+        navigate(`/${user}/notes`, {
+          state: { userData: result.userData },
+        });
       }
     } catch (error) {
       console.error(error);

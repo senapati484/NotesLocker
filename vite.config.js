@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import handler from './api/send-otp.js'
+import sendOtpHandler from './api/send-otp.js'
+import verifyOtpHandler from './api/verify-otp.js'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -17,7 +18,8 @@ export default defineConfig(({ mode }) => {
         name: 'api-serverless-middleware',
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
-            if (req.url && req.url.startsWith('/api/send-otp')) {
+            if (req.url && (req.url.startsWith('/api/send-otp') || req.url.startsWith('/api/verify-otp'))) {
+              const targetHandler = req.url.startsWith('/api/send-otp') ? sendOtpHandler : verifyOtpHandler;
               let body = '';
               req.on('data', chunk => {
                 body += chunk;
@@ -51,7 +53,7 @@ export default defineConfig(({ mode }) => {
                     }
                   };
 
-                  await handler(mockedReq, mockedRes);
+                  await targetHandler(mockedReq, mockedRes);
                 } catch (err) {
                   res.statusCode = 500;
                   res.setHeader('Content-Type', 'application/json');
