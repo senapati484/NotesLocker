@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   LuLock, LuGlobe, LuShield, LuTerminal, LuSun, LuMoon, 
-  LuClock, LuChevronRight, LuFileText, LuMenu, LuX, LuArrowRight, LuSparkles
+  LuClock, LuChevronRight, LuFileText, LuMenu, LuX, LuArrowRight, LuSparkles,
+  LuGithub
 } from "react-icons/lu";
 import Collapsible from "../components/Collapsable";
 import { fetchUser } from "../utils/fetchUser";
@@ -195,21 +196,23 @@ const Home = () => {
               {darkMode ? <LuSun className="w-4 h-4 text-amber-500" /> : <LuMoon className="w-4 h-4" />}
             </button>
 
-            {/* Strategy Call Button -> Claim Locker Trigger */}
-            <button
-              onClick={handleFocusInput}
+            {/* GitHub Repository Link Button */}
+            <a
+              href="https://github.com/senapati484/NotesLocker"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group hidden md:flex items-center gap-2 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-slate-100 dark:text-slate-950 text-white pl-5 pr-2 py-2 rounded-full transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] active:scale-[0.98]"
             >
               <div className="h-[20px] overflow-hidden relative">
                 <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-1/2">
-                  <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">Claim Locker</span>
-                  <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">Claim Locker</span>
+                  <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">GitHub</span>
+                  <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">GitHub</span>
                 </div>
               </div>
-              <div className="w-6 h-6 bg-white/20 dark:bg-slate-950/10 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45">
-                <LuArrowRight className="w-3.5 h-3.5 text-white dark:text-slate-950" />
+              <div className="w-6 h-6 bg-white/20 dark:bg-slate-950/10 rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:scale-110 shrink-0">
+                <LuGithub className="w-3.5 h-3.5 text-white dark:text-slate-950" />
               </div>
-            </button>
+            </a>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -341,7 +344,7 @@ const Home = () => {
             {/* Claim Locker Input Form Card */}
             <div className="p-1.5 bg-white/90 dark:bg-slate-900/95 border border-gray-200/50 dark:border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-full flex items-center max-w-md w-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
               <div className="flex items-center flex-1 min-w-0 pl-4">
-                <span className="hidden sm:inline text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.app/</span>
+                <span className="hidden sm:inline text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.vercel.app/</span>
                 <span className="inline sm:hidden text-gray-400 text-xs font-medium select-none">/</span>
                 <input
                   ref={inputRef}
