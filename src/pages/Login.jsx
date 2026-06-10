@@ -125,13 +125,15 @@ const Login = ({ onLogin }) => {
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Password
               </label>
-              <button
-                type="button"
-                onClick={() => setIsForgotModalOpen(true)}
-                className="text-[11px] font-semibold text-[#ff5f03] hover:text-[#e04f02] transition-colors focus:outline-none"
-              >
-                Forgot Password?
-              </button>
+              {userData?.[0]?.recoveryEmail && (
+                <button
+                  type="button"
+                  onClick={() => setIsForgotModalOpen(true)}
+                  className="text-[11px] font-semibold text-[#ff5f03] hover:text-[#e04f02] transition-colors focus:outline-none"
+                >
+                  Forgot Password?
+                </button>
+              )}
             </div>
             <div className="relative flex items-center bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
               <span className="pl-4 text-slate-400 dark:text-slate-500 shrink-0">
