@@ -1,21 +1,20 @@
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toastEvents } from "../utils/toastEvent";
 
 const ToastNotification = {
-  success: (message, autoClose = 3000) => {
-    toast.success(message, { autoClose });
+  success: (message, duration = 3000) => {
+    toastEvents.emit({ id: Math.random(), type: "success", message, duration });
   },
-  error: (message, autoClose = 5000) => {
-    toast.error(message, { autoClose });
+  error: (message, duration = 5000) => {
+    toastEvents.emit({ id: Math.random(), type: "error", message, duration });
   },
-  info: (message, autoClose = 4000) => {
-    toast.info(message, { autoClose });
+  warning: (message, duration = 5000) => {
+    toastEvents.emit({ id: Math.random(), type: "warning", message, duration });
   },
-  warning: (message, autoClose = 7000) => {
-    toast.warning(message, { autoClose });
+  info: (message, duration = 4000) => {
+    toastEvents.emit({ id: Math.random(), type: "info", message, duration });
   },
-  custom: (message, options = {}) => {
-    toast(message, options);
+  custom: (message, duration = 3000) => {
+    toastEvents.emit({ id: Math.random(), type: "info", message, duration });
   },
 };
 
