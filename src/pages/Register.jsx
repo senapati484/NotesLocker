@@ -176,8 +176,8 @@ const Register = ({ onLogin }) => {
           >
             <div className="h-[20px] overflow-hidden relative">
               <div className="flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-translate-y-1/2">
-                <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">{isSubmitting ? "Creating Locker..." : "Create Locker & Get Started"}</span>
-                <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">{isSubmitting ? "Creating Locker..." : "Create Locker & Get Started"}</span>
+                <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">{isSubmitting ? "Creating Locker..." : "Create Locker"}</span>
+                <span className="text-[13px] font-medium h-[20px] flex items-center pr-1 whitespace-nowrap">{isSubmitting ? "Creating Locker..." : "Create Locker"}</span>
               </div>
             </div>
             <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] group-hover:-rotate-45 shrink-0">
@@ -187,7 +187,7 @@ const Register = ({ onLogin }) => {
 
           <button
             onClick={() => navigate("/")}
-            className="w-full py-2.5 text-slate-405 hover:text-slate-800 dark:text-slate-500 dark:hover:text-white text-sm font-medium transition-colors duration-200"
+            className="w-full py-2.5 text-slate-400 hover:text-slate-800 dark:text-slate-500 dark:hover:text-white text-sm font-medium transition-colors duration-200"
           >
             Cancel
           </button>

@@ -332,7 +332,7 @@ const Home = () => {
             for your thoughts <span className="bg-gradient-to-r from-[#ff5f03] to-[#ff8f43] bg-clip-text text-transparent">&</span> secrets.
           </h1>
           
-          <p className="text-sm sm:text-base text-gray-605 dark:text-gray-400 mt-5 max-w-lg leading-relaxed">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-5 max-w-lg leading-relaxed">
             Zero logs. Client-side hashing. Automatic cloud synchronization. Start typing instantly without an account.
           </p>
 
@@ -341,7 +341,8 @@ const Home = () => {
             {/* Claim Locker Input Form Card */}
             <div className="p-1.5 bg-white/90 dark:bg-slate-900/95 border border-gray-200/50 dark:border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.05)] rounded-full flex items-center max-w-md w-full focus-within:ring-2 focus-within:ring-[#ff5f03]/20 focus-within:border-[#ff5f03] transition-all duration-300">
               <div className="flex items-center flex-1 min-w-0 pl-4">
-                <span className="text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.vercel.app/</span>
+                <span className="hidden sm:inline text-gray-400 text-xs sm:text-[13px] font-medium select-none">noteslocker.app/</span>
+                <span className="inline sm:hidden text-gray-400 text-xs font-medium select-none">/</span>
                 <input
                   ref={inputRef}
                   type="text"
@@ -498,7 +499,7 @@ const Home = () => {
                 className="group cursor-pointer bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-[320px] relative overflow-hidden"
               >
                 {/* Graphics slot representing aspects */}
-                <div className={`aspect-[4/3] w-full rounded-xl flex items-center justify-center ${item.accent} relative overflow-hidden transition-all duration-300 group-hover:scale-[1.01]`}>
+                <div className={`h-36 sm:h-40 w-full rounded-xl flex items-center justify-center ${item.accent} relative overflow-hidden transition-all duration-300 group-hover:scale-[1.01]`}>
                   <LuFileText className="w-10 h-10 animate-pulse" />
                   
                   {/* Expanding White Button on Hover */}

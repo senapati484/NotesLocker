@@ -156,7 +156,7 @@ const Login = ({ onLogin }) => {
 
           <button
             onClick={() => navigate("/")}
-            className="w-full py-2.5 text-slate-405 hover:text-slate-800 dark:text-slate-500 dark:hover:text-white text-sm font-medium transition-colors duration-200"
+            className="w-full py-2.5 text-slate-400 hover:text-slate-800 dark:text-slate-500 dark:hover:text-white text-sm font-medium transition-colors duration-200"
           >
             Go Back
           </button>
