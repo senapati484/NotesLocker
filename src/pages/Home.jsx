@@ -522,11 +522,11 @@ const Home = () => {
       </section>
 
       {/* SECTION 4: FAQs */}
-      <section id="faqs" className="bg-white dark:bg-slate-950 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
-        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12">
+      <section id="faqs" className="bg-white dark:bg-slate-955 pt-16 sm:pt-20 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 relative z-20 border-t border-slate-200/50 dark:border-slate-800/40 transition-colors duration-500">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 flex flex-col items-center">
           
           {/* Badge row */}
-          <div className="flex items-center gap-3 mb-6 sm:mb-8">
+          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
             <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-[11px] sm:text-[12px] font-semibold">
               3
             </div>
@@ -536,11 +536,11 @@ const Home = () => {
           </div>
 
           {/* Heading h2 */}
-          <h2 className="text-[clamp(1.75rem,7vw,4.2rem)] sm:text-[clamp(2.5rem,5vw,4.2rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 dark:text-white mb-10 sm:mb-14 lg:mb-16">
+          <h2 className="text-[clamp(1.75rem,5.5vw,3.5rem)] font-medium leading-[1.08] tracking-[-0.03em] text-gray-900 dark:text-white mb-10 sm:mb-14 lg:mb-16 text-center">
             Frequently Asked Questions
           </h2>
 
-          <div className="max-w-4xl space-y-4">
+          <div className="max-w-3xl w-full space-y-4">
             {faqData.map((faq, index) => (
               <Collapsible key={index} question={faq.question} answer={faq.answer} />
             ))}
