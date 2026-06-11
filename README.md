@@ -6,6 +6,16 @@ The application utilizes a **Zero-Knowledge End-to-End Encryption (E2EE)** model
 
 ---
 
+## 📱 Screenshots
+
+### Landing Page
+<img width="1710" height="952" alt="note2" src="https://github.com/user-attachments/assets/5a00aa25-0ad8-48fe-a0d8-3dc2b6fabee2" />
+
+### Notes Workspace
+<img width="1710" height="951" alt="notes" src="https://github.com/user-attachments/assets/8959ba7d-da1b-4fd8-8fec-d8010f3978ef" />
+
+---
+
 ## 🔒 Zero-Knowledge Cryptographic Architecture (E2EE)
 
 NotesLocker ensures absolute privacy by performing all encryption and decryption operations locally inside the user's browser. Plaintext notes and passwords are never transmitted over the network.
@@ -65,12 +75,12 @@ Since we cannot reset your password, we offer a Zero-Knowledge recovery mechanis
 
 ## Features
 
-- **End-to-End Encryption (E2EE)**: Complete data privacy.
-- **Privacy-Focused & Anonymous**: No personal email or signup details required to start using.
-- **Auto-Save Functionality**: Automatic in-flight syncing with Firestore.
-- **Secure Password Changes**: Update your password locally without decrypting/re-encrypting raw note assets.
-- **Open-Source Transparency**: Fully auditable codebase.
-- **Dark Mode Support**: Enjoy a theme that suits your preferences.
+- **🔒 Zero-Knowledge Security (E2EE)**: Complete client-side encryption using the native Web Crypto API (AES-GCM 256-bit + PBKDF2 key derivation). Passwords are never sent or stored.
+- **🔑 Recovery Key Escrow**: Password recovery utilizing a secure server-side escrow mechanism, verified via email OTP sent through a secure Vercel Serverless Function.
+- **⚡ Typing Lag Elimination**: Extracted and memoized individual note elements (`NoteItem`) and search queries to optimize editor performance.
+- **🎨 Premium UI Overhaul**: Upgraded colors to brand orange, replaced browser alerts with custom modals, implemented event-driven toast notifications, and adjusted mobile viewports.
+- **🛠️ Hover Tooltip Fix**: Disabled browser-native tooltips on truncated notes inside the sidebar.
+- **🌙 Dark Mode Support**: Sleek, eye-friendly dark theme that toggles dynamically.
 
 ---
 
