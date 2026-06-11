@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, memo } from "react";
 import { 
   LuSearch, LuPlus, LuLogOut, LuTrash2, LuLock, LuSun, LuMoon, 
   LuChevronLeft, LuCheck, LuInfo, LuFileText, LuMail
@@ -12,6 +12,55 @@ import {
 import ConfirmPassword from "../components/ConfirmPassword";
 import RecoveryEmailModal from "../components/RecoveryEmailModal";
 import ToastNotification from "../components/ToastNotification";
+
+// Relative time helper (moved outside component to prevent redeclaration)
+const formatTime = (isoString) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+};
+
+// Memoized Note Item component to prevent unnecessary sidebar re-renders
+const NoteItem = memo(({ note, isSelected, onClick }) => {
+  return (
+    <button
+      onClick={() => onClick(note)}
+      className={`w-full p-3.5 rounded-2xl text-left transition-all duration-200 border ${
+        isSelected
+          ? "bg-[#ff5f03]/8 dark:bg-[#ff5f03]/10 border-[#ff5f03]/25 dark:border-[#ff5f03]/20 text-[#ff5f03] font-semibold shadow-sm"
+          : "hover:bg-gray-50/50 dark:hover:bg-slate-800/20 text-slate-600 dark:text-slate-400 border-transparent"
+      }`}
+    >
+      <div className="flex justify-between items-baseline mb-1">
+        <span className="truncate text-sm font-medium pr-2">{note.name || "Untitled Note"}</span>
+        <span className="text-[10px] text-slate-400 shrink-0 font-normal">
+          {formatTime(note.updatedAt || note.createdAt)}
+        </span>
+      </div>
+      <p className="text-xs text-slate-400 dark:text-slate-500 truncate font-normal">
+        {note.text || "Empty note"}
+      </p>
+    </button>
+  );
+}, (prevProps, nextProps) => {
+  // Custom equality comparison: skip re-rendering if selection status and core note properties did not change
+  return prevProps.isSelected === nextProps.isSelected &&
+         prevProps.note.id === nextProps.note.id &&
+         prevProps.note.name === nextProps.note.name &&
+         prevProps.note.text === nextProps.note.text &&
+         prevProps.note.updatedAt === nextProps.note.updatedAt &&
+         prevProps.note.createdAt === nextProps.note.createdAt;
+});
 
 const Notes = () => {
   const location = useLocation();
@@ -94,13 +143,13 @@ const Notes = () => {
   }, [selectedNote, savingStatus, saveNoteDirect]);
 
   // Switch note handler - saves previous note immediately if unsaved
-  const handleNoteClick = async (note) => {
+  const handleNoteClick = useCallback(async (note) => {
     if (savingStatus === "unsaved" && selectedNote) {
       await saveNoteDirect(selectedNote);
     }
     setSelectedNote(note);
     setSavingStatus("idle");
-  };
+  }, [savingStatus, selectedNote, saveNoteDirect]);
 
   // Text content change handler
   const handleNoteTextChange = (event) => {
@@ -201,29 +250,16 @@ const Notes = () => {
     navigate("/");
   };
 
-  // Search filtering
-  const filteredNotes = notes.filter(
-    (n) =>
-      n.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      n.text.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Relative time helper
-  const formatTime = (isoString) => {
-    if (!isoString) return "";
-    const date = new Date(isoString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
-  };
+  // Search filtering (memoized to prevent re-filtering on every keystroke in editor)
+  const filteredNotes = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return notes;
+    return notes.filter(
+      (n) =>
+        n.name.toLowerCase().includes(query) ||
+        n.text.toLowerCase().includes(query)
+    );
+  }, [notes, searchQuery]);
 
   // Render Status Indicator
   const renderStatus = () => {
@@ -299,29 +335,16 @@ const Notes = () => {
           {filteredNotes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
               <LuFileText className="w-8 h-8 text-slate-300 dark:text-slate-700 mb-2" />
-              <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">No notes found</p>
+              <p className="text-xs text-slate-400 dark:text-slate-550 font-medium">No notes found</p>
             </div>
           ) : (
             filteredNotes.map((note) => (
-              <button
+              <NoteItem
                 key={note.id}
-                onClick={() => handleNoteClick(note)}
-                className={`w-full p-3.5 rounded-2xl text-left transition-all duration-200 border ${
-                  selectedNote?.id === note.id
-                    ? "bg-[#ff5f03]/8 dark:bg-[#ff5f03]/10 border-[#ff5f03]/25 dark:border-[#ff5f03]/20 text-[#ff5f03] font-semibold shadow-sm"
-                    : "hover:bg-gray-50/50 dark:hover:bg-slate-800/20 text-slate-600 dark:text-slate-400 border-transparent"
-                }`}
-              >
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="truncate text-sm font-medium pr-2">{note.name || "Untitled Note"}</span>
-                  <span className="text-[10px] text-slate-400 shrink-0 font-normal">
-                    {formatTime(note.updatedAt || note.createdAt)}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 truncate font-normal">
-                  {note.text || "Empty note"}
-                </p>
-              </button>
+                note={note}
+                isSelected={selectedNote?.id === note.id}
+                onClick={handleNoteClick}
+              />
             ))
           )}
         </div>
