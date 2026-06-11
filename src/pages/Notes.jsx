@@ -35,6 +35,7 @@ const NoteItem = memo(({ note, isSelected, onClick }) => {
   return (
     <button
       onClick={() => onClick(note)}
+      title=""
       className={`w-full p-3.5 rounded-2xl text-left transition-all duration-200 border ${
         isSelected
           ? "bg-[#ff5f03]/8 dark:bg-[#ff5f03]/10 border-[#ff5f03]/25 dark:border-[#ff5f03]/20 text-[#ff5f03] font-semibold shadow-sm"
@@ -42,12 +43,12 @@ const NoteItem = memo(({ note, isSelected, onClick }) => {
       }`}
     >
       <div className="flex justify-between items-baseline mb-1">
-        <span className="truncate text-sm font-medium pr-2">{note.name || "Untitled Note"}</span>
+        <span className="truncate text-sm font-medium pr-2" title="">{note.name || "Untitled Note"}</span>
         <span className="text-[10px] text-slate-400 shrink-0 font-normal">
           {formatTime(note.updatedAt || note.createdAt)}
         </span>
       </div>
-      <p className="text-xs text-slate-400 dark:text-slate-500 truncate font-normal">
+      <p className="text-xs text-slate-400 dark:text-slate-500 truncate font-normal" title="">
         {note.text || "Empty note"}
       </p>
     </button>
