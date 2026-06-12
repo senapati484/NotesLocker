@@ -12,11 +12,11 @@ import ToastNotification from "../components/ToastNotification";
 const faqData = [
   {
     question: "Do you store any personal information?",
-    answer: "Absolutely not. We do not require emails, names, or phone numbers. Your username is the only identifier, keeping you completely anonymous.",
+    answer: "Absolutely not. We do not require emails, names, or phone numbers to start. Your username is the only identifier, keeping you completely anonymous unless you choose to configure a recovery email.",
   },
   {
     question: "Can I recover my notes if I forget my password?",
-    answer: "No. Since we prioritize security and anonymity, we don't have recovery emails or backdoors. Your password is your only key.",
+    answer: "Yes, but only if you have set up a recovery email inside your locker settings beforehand. NotesLocker uses a Zero-Knowledge recovery escrow: we verify your identity via email OTP and deliver your encrypted master key recovery payload to reset your password. If you didn't configure a recovery email, your notes are unrecoverable.",
   },
   {
     question: "Can I backup or export my notes?",
@@ -28,20 +28,20 @@ const faqData = [
   },
   {
     question: "How do you secure my password?",
-    answer: "Passwords are encrypted client-side using SHA-256 before ever being stored in our Firestore database. This ensures your key stays private.",
+    answer: "We do not store or transmit your password or password hashes. Your browser derives a 256-bit cryptographic key from your password using PBKDF2 (100,000 rounds of HMAC-SHA-256 and a random salt). This key decrypts your locker's Master Key in local memory. Authentication is verified using a Zero-Knowledge validation token decrypted on your client.",
   },
 ];
 
 const features = [
   {
     icon: <LuLock className="w-5 h-5 text-[#ff5f03]" />,
-    title: "Client-Side Hashing",
-    description: "Passwords are encrypted via SHA-256 before leaving your browser, keeping your keys private.",
+    title: "Zero-Knowledge E2EE",
+    description: "Your notes are encrypted in your browser using AES-GCM 256-bit before syncing to the cloud.",
   },
   {
     icon: <LuShield className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />,
     title: "Absolute Anonymity",
-    description: "No email verification, sign-up forms, or tracking cookies. Just enter a name and start writing.",
+    description: "No mandatory email verification or tracking cookies. Just enter a name and start writing.",
   },
   {
     icon: <LuGlobe className="w-5 h-5 text-sky-500 dark:text-sky-400" />,

@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useMemo, memo } from "react";
 import { 
   LuSearch, LuPlus, LuLogOut, LuTrash2, LuLock, LuSun, LuMoon, 
-  LuChevronLeft, LuCheck, LuInfo, LuFileText, LuMail
+  LuChevronLeft, LuCheck, LuInfo, LuFileText, LuMail, LuShare2
 } from "react-icons/lu";
 import {
   deleteNote,
@@ -251,6 +251,33 @@ const Notes = () => {
     navigate("/");
   };
 
+  // Share locker link
+  const handleShare = async () => {
+    const shareUrl = `https://noteslocker.vercel.app/${currentUser?.name || "ghost"}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "NotesLocker",
+          text: `Check out my secure notes locker: /${currentUser?.name}`,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("Error sharing:", error);
+          ToastNotification.error("Failed to share locker.");
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        ToastNotification.success("Locker link copied to clipboard!");
+      } catch (err) {
+        console.error("Failed to copy link:", err);
+        ToastNotification.error("Failed to copy link.");
+      }
+    }
+  };
+
   // Search filtering (memoized to prevent re-filtering on every keystroke in editor)
   const filteredNotes = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -308,9 +335,18 @@ const Notes = () => {
         {/* Sidebar Header */}
         <div className="p-4 border-b border-gray-200/50 dark:border-slate-800/40">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-bold font-display tracking-tight text-slate-950 dark:text-white">
-              NotesLocker
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold font-display tracking-tight text-slate-950 dark:text-white">
+                NotesLocker
+              </h1>
+              <button
+                onClick={handleShare}
+                className="p-1.5 text-slate-500 hover:text-[#ff5f03] dark:text-slate-400 dark:hover:text-[#ff5f03] rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                title="Share Locker Link"
+              >
+                <LuShare2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
             <span className="px-3 py-1 text-[11px] font-bold bg-[#ff5f03]/10 text-[#ff5f03] rounded-full">
               /{currentUser?.name}
             </span>
