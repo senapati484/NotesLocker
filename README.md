@@ -129,7 +129,7 @@ Since we cannot reset your password, we offer a Zero-Knowledge recovery mechanis
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository, make your changes, and create a pull request. Ensure that your changes align with the project's goals and adhere to best practices.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to set up the project and submit your contributions.
 
 ## License
 
